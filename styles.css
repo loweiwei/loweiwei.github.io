@@ -329,6 +329,7 @@ h4 {
 
 .quick-contact a {
   display: inline-flex;
+  gap: 5px;
   min-height: 38px;
   align-items: center;
   padding: 0 13px;
@@ -337,6 +338,10 @@ h4 {
   background: rgba(255, 250, 240, 0.72);
   color: var(--muted);
   font-weight: 900;
+}
+
+.quick-contact span {
+  color: var(--accent-deep);
 }
 
 .quick-contact a:hover {
