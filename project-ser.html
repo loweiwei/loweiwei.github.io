@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="語音情緒辨識 MFCC × 1D CNN 專題詳細頁：論文重現、leakage-free evaluation、MFCC ablation 與 cross-dataset generalization。">
+    <title>語音情緒辨識 - MFCC × 1D CNN | 羅暐媁</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav" aria-label="主要導覽">
+        <a class="logo" href="index.html">LOWEIWEI</a>
+        <div class="nav-links">
+          <a href="index.html">首頁</a>
+          <a href="journey.html">學期經歷</a>
+          <a class="active" href="projects.html">作品集</a>
+          <a href="resume.html">履歷聯絡</a>
+        </div>
+      </nav>
+    </header>
+
+    <nav class="research-subnav" aria-label="語音情緒辨識頁面導覽">
+      <a href="#overview">Overview</a>
+      <a href="#reproduction">Reproduction</a>
+      <a href="#discussion">Discussion</a>
+      <a href="#findings">Findings</a>
+      <a href="#github">GitHub</a>
+    </nav>
+
+    <main class="ser-page">
+      <section id="overview" class="section ser-hero">
+        <a class="back-link" href="projects.html">← 回作品集</a>
+        <p class="eyebrow">Speech Emotion Recognition / MFCC / 1D CNN</p>
+        <h1>語音情緒辨識｜MFCC × 1D CNN</h1>
+        <h2>訊號與系統期末專題</h2>
+        <p class="hero-text">本專題以論文 Speech Emotion Recognition Based on 1D CNN and MFCC 為基礎，重現 MFCC 搭配 1D CNN 的情緒分類方法，並進一步比較不同 MFCC 設定、leakage-free evaluation 與 cross-dataset experiments，分析模型真正的泛化能力。</p>
+        <div class="tag-list research-tags">
+          <span>Speech Emotion Recognition</span>
+          <span>MFCC</span>
+          <span>1D CNN</span>
+          <span>Signal Processing</span>
+          <span>Ablation Study</span>
+          <span>Leakage-free Evaluation</span>
+          <span>Cross-Dataset Generalization</span>
+        </div>
+        <div class="hero-actions">
+          <a class="button primary" href="https://github.com/loweiwei/ser-1d-cnn-mfcc" target="_blank" rel="noreferrer">GitHub</a>
+          <a class="button secondary" href="https://drive.google.com/file/d/1RSIoCS1FJ7HjVhfa-K2TyYRo055mbSdd/view?usp=sharing" target="_blank" rel="noreferrer">專題簡報</a>
+        </div>
+      </section>
+
+      <section id="reproduction" class="section ser-section">
+        <div class="section-heading">
+          <p class="eyebrow">Paper Reproduction</p>
+          <h2>Paper Reproduction｜論文重現</h2>
+          <p>依照原論文建立資料前處理、MFCC 特徵擷取、1D CNN 訓練與評估流程，並在 CREMA-D 與 RAVDESS 上重現實驗結果。</p>
+        </div>
+        <a class="ser-figure" href="#lightbox-ser-pipeline" aria-label="放大 SER 整體 Pipeline 圖">
+          <img src="images/SER/SER_PIPLINE.png" alt="語音情緒辨識 MFCC 與 1D CNN 整體 Pipeline">
+          <span>Overall Pipeline</span>
+        </a>
+        <div class="baseline-table-card">
+          <div class="section-heading compact-heading">
+            <p class="eyebrow">Baseline Results</p>
+            <h2>Baseline Results</h2>
+          </div>
+          <table>
+            <thead>
+              <tr><th>Dataset</th><th>原論文 Accuracy</th><th>我的 Accuracy</th><th>原論文 Macro F1</th><th>我的 Macro F1</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>CREMA-D</td><td>94.69%</td><td>約 95%</td><td>0.95</td><td>0.95</td></tr>
+              <tr><td>RAVDESS</td><td>97.33%</td><td>約 93%</td><td>0.97</td><td>0.92</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="ser-highlight-note">Baseline reproduction 顯示模型可以重現接近原論文的結果，但這還不能直接代表模型具備真正的泛化能力。</p>
+      </section>
+
+      <section id="discussion" class="section ser-section">
+        <div class="section-heading">
+          <p class="eyebrow">Discussion 1</p>
+          <h2>Leakage-free Evaluation</h2>
+        </div>
+        <div class="leakage-block">
+          <div class="leakage-copy">
+            <p class="eyebrow">Original Evaluation Setup</p>
+            <h3>原論文做法</h3>
+            <p>原論文先對完整語音資料進行 Noise Addition 與 Pitch Shifting，再將擴增後資料以 8:2 切分為 Train / Test。</p>
+          </div>
+          <div class="original-leakage-flow">
+            <div class="ser-mini-flow"><span>Original Utterances</span><span>Noise Addition / Pitch Shifting</span><span>Augmented Samples</span><span>80% Train / 20% Test</span></div>
+            <div class="leakage-risk-diagram">
+              <strong>Potential Risk: Data Leakage</strong>
+              <div><span>同一 utterance</span><span>augmented version A 進 Train</span><span>augmented version B 進 Test</span></div>
+              <p>因為 augmentation 發生在資料切分之前，同一原始 utterance 的不同衍生版本可能同時出現在 Train 與 Test 中，模型可能間接看過與測試樣本高度相似的語音。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="leakage-block reference-practice">
+          <div class="leakage-copy">
+            <p class="eyebrow">Reference Evaluation Practice</p>
+            <h3>參考其他 SER 研究的評估方式</h3>
+            <p>我進一步參考其他 Speech Emotion Recognition 研究常見的 speaker-independent / utterance-independent evaluation，將原始 utterances 先分到不同 split，再只對 training data 做 augmentation。</p>
+          </div>
+          <div>
+            <div class="principle-list">
+              <span>Original utterances 先切分 Train / Test</span>
+              <span>Augmentation 只作用於 Training Set</span>
+              <span>Test Set 保持原始資料，不包含任何衍生樣本</span>
+            </div>
+            <div class="citation-card-row">
+              <span>Zhao et al., Interspeech 2019</span>
+              <span>Trigeorgis et al., ICASSP 2016</span>
+              <span>INTERSPEECH Computational Paralinguistics Challenge</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="leakage-block redesigned-eval">
+          <div class="leakage-copy redesigned-eval-intro">
+            <p class="eyebrow">My Redesigned Evaluation</p>
+            <h3>我的重新設計</h3>
+            <p>核心原則是先切分，再增強。所有原始 utterances 先被分配到 Train / Test，接著只對 Training Set 做 augmentation，確保測試資料與訓練資料在 utterance level 上彼此獨立。</p>
+          </div>
+          <div class="redesigned-eval-content">
+            <div class="redesigned-flowchart" aria-label="Leakage-free evaluation redesigned flow">
+              <div class="wide-node">Original Utterances</div>
+              <div class="wide-node">Train / Test Split</div>
+              <div class="split-columns">
+                <div><span>Train</span><span>Augmentation</span><span>Training</span></div>
+                <div><span>Test</span><span>Original Only</span><span>Evaluation</span></div>
+              </div>
+            </div>
+            <div class="section-heading compact-heading nested-heading">
+              <p class="eyebrow">Re-evaluation Results</p>
+              <h3>重新評估結果</h3>
+            </div>
+            <div class="reeval-result-grid">
+              <article>
+                <h3>CREMA-D</h3>
+                <p>Original Accuracy: <strong>94.69%</strong></p>
+                <span>↓</span>
+                <p>Leakage-free Accuracy: <strong>63%</strong></p>
+                <div>Accuracy Drop：<strong>−31.69 percentage points</strong></div>
+              </article>
+              <article>
+                <h3>RAVDESS</h3>
+                <p>Original Accuracy: <strong>97.33%</strong></p>
+                <span>↓</span>
+                <p>Leakage-free Accuracy: <strong>72%</strong></p>
+                <div>Accuracy Drop：<strong>−25.33 percentage points</strong></div>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <div class="interpretation-block">
+          <div class="section-heading compact-heading">
+            <p class="eyebrow">Interpretation</p>
+            <h3>這個結果代表什麼？</h3>
+          </div>
+          <div class="interpretation-grid">
+            <article><span>01</span><h3>Original Accuracy may be optimistic</h3><p>原本高 Accuracy 可能部分受到資料切分與 augmentation leakage 影響。</p></article>
+            <article><span>02</span><h3>Train–Validation Gap increases</h3><p>重新切分後，模型在 unseen speech 上的表現明顯下降，顯示泛化能力較原始 evaluation 弱。</p></article>
+            <article><span>03</span><h3>Evaluation protocol matters</h3><p>SER 的結果不只受模型架構影響，資料切分與 augmentation policy 也會直接影響最終表現。</p></article>
+          </div>
+          <div class="ser-takeaway-card">
+            <h3>High Accuracy ≠ Strong Generalization</h3>
+            <p>當資料切分方式改為 leakage-free 後，模型表現明顯下降，顯示原本的高分不一定代表對真正 unseen speech 具有同等泛化能力。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section ser-section ablation-section">
+        <div class="section-heading">
+          <p class="eyebrow">Discussion 2</p>
+          <h2>Acoustic Feature & MFCC Ablation</h2>
+          <p>分析不同 MFCC 與前處理參數對 CREMA-D / RAVDESS 的影響。</p>
+          <div class="ser-tag-row"><span>MFCC Dimension</span><span>Hop Length</span><span>FFT Size</span><span>Pre-emphasis</span><span>Delta Feature</span></div>
+        </div>
+        <div class="ablation-table-card">
+          <table>
+            <thead>
+              <tr><th>Ablation</th><th>CREMA-D</th><th>RAVDESS</th><th>主要觀察</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>MFCC Dimension</td><td>13：0.93<br><strong>20：0.95 <span>Best</span></strong><br>40：0.94</td><td>13：0.91<br>20：0.93<br><strong>40：0.94 <span>Best</span></strong></td><td>維度不是越高越好，最佳設定會依 Dataset 不同。</td></tr>
+              <tr><td>Hop Length</td><td><strong>256：0.96 <span>Best</span></strong><br>512：0.95<br>1024：0.90</td><td>256：0.81<br><strong>512：0.95 <span>Best</span></strong><br>1024：0.71</td><td>Hop 過大會降低時間解析度，但過小也不一定最適合所有資料集。</td></tr>
+              <tr><td>FFT Size</td><td>1024：0.90<br>2048：0.95<br><strong>4096：0.96 <span>Best</span></strong></td><td>1024：0.92<br><strong>2048：0.93 <span>Best</span></strong><br>4096：0.91</td><td>更高頻率解析度不代表一定能持續提升辨識效果。</td></tr>
+              <tr><td>Pre-emphasis</td><td><strong>On / Off 差異小，約 0.95</strong></td><td>關閉後降至約 0.83</td><td>RAVDESS 對 Pre-emphasis 較敏感。</td></tr>
+              <tr><td>Delta Feature</td><td>與 baseline 接近，約 0.94</td><td>加入後降至約 0.85</td><td>額外動態特徵不一定有幫助，甚至可能增加冗餘。</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="ablation-mobile-cards">
+          <article><h3>MFCC Dimension</h3><p><strong>CREMA-D Best:</strong> 20 / 0.95</p><p><strong>RAVDESS Best:</strong> 40 / 0.94</p><span>維度不是越高越好。</span></article>
+          <article><h3>Hop Length</h3><p><strong>CREMA-D Best:</strong> 256 / 0.96</p><p><strong>RAVDESS Best:</strong> 512 / 0.95</p><span>時間解析度存在 dataset trade-off。</span></article>
+          <article><h3>FFT Size</h3><p><strong>CREMA-D Best:</strong> 4096 / 0.96</p><p><strong>RAVDESS Best:</strong> 2048 / 0.93</p><span>更高頻率解析度不一定持續提升。</span></article>
+          <article><h3>Pre-emphasis</h3><p><strong>CREMA-D:</strong> On / Off 差異小，約 0.95</p><p><strong>RAVDESS:</strong> 關閉後約 0.83</p><span>RAVDESS 對 Pre-emphasis 較敏感。</span></article>
+          <article><h3>Delta Feature</h3><p><strong>CREMA-D:</strong> 約 0.94</p><p><strong>RAVDESS:</strong> 約 0.85</p><span>額外動態特徵可能增加冗餘。</span></article>
+        </div>
+        <div class="ablation-findings-grid">
+          <article><span>01</span><h3>沒有一組參數對所有 Dataset 都最佳</h3><p>CREMA-D 與 RAVDESS 對 MFCC Dimension、Hop Length、FFT Size 的最佳設定不同，顯示聲學前處理需要依 Dataset 特性調整。</p></article>
+          <article><span>02</span><h3>更多特徵或更高解析度，不代表更好的辨識能力</h3><p>增加 MFCC 維度、FFT Size 或 Delta Feature 並不一定提升表現，有時甚至會加入冗餘資訊。</p></article>
+          <article><span>03</span><h3>時間與頻率解析度需要取得平衡</h3><p>Hop Length 與 FFT Size 都存在 Dataset-dependent trade-off，不能單純追求更細的時間解析度或更高的頻率解析度。</p></article>
+        </div>
+        <div class="ablation-takeaway-card">
+          <h3>No single MFCC setting works best for every dataset.</h3>
+          <p>MFCC 與聲學前處理參數的最佳設定具有明顯 Dataset Dependency，因此模型表現不只取決於網路架構，也受到特徵設計影響。</p>
+        </div>
+      </section>
+
+      <section class="section ser-section cross-dataset-section">
+        <div class="section-heading">
+          <p class="eyebrow">Discussion 3</p>
+          <h2>Cross-Dataset Generalization</h2>
+          <p>分析模型在不同語音資料域下的泛化限制。</p>
+        </div>
+        <div class="cross-experiment-layout">
+          <article class="cross-experiment-card">
+            <p class="eyebrow">Cross-Dataset Experiment</p>
+            <h3>RAVDESS → CREMA-D</h3>
+            <dl>
+              <div><dt>Train Dataset</dt><dd>RAVDESS</dd></div>
+              <div><dt>Test Dataset</dt><dd>CREMA-D</dd></div>
+            </dl>
+            <p class="cross-score">35%</p>
+            <span>Cross-Dataset Accuracy</span>
+          </article>
+          <div class="cross-experiment-copy">
+            <p>同一模型在單一 Dataset 內可取得高辨識率，但直接跨 Dataset 測試時 Accuracy 降至 35%，顯示模型學到的聲學特徵具有明顯 Dataset Dependency。</p>
+          </div>
+        </div>
+
+        <div class="confusion-section">
+          <div class="section-heading compact-heading">
+            <p class="eyebrow">Confusion Matrix</p>
+            <h3>跨資料集後的類別混淆</h3>
+            <p>跨資料集後，部分 Emotion 類別出現明顯混淆，表示不同資料域中的聲學表現並不一致。</p>
+          </div>
+          <a class="ser-figure confusion-figure" href="#lightbox-confusion-matrix" aria-label="放大 Cross-Dataset Confusion Matrix">
+            <img src="images/SER/CONFUSE_MATRIX.png" alt="RAVDESS train to CREMA-D test confusion matrix">
+            <span>Cross-Dataset Confusion Matrix</span>
+          </a>
+        </div>
+
+        <div class="section-heading compact-heading domain-gap-heading">
+          <p class="eyebrow">Why Does the Domain Gap Happen?</p>
+          <h3>為什麼會有 Domain Gap？</h3>
+        </div>
+        <div class="domain-gap-grid">
+          <article><span>01</span><h3>Recording Condition</h3><p>不同 Dataset 的錄音設備、背景環境與音訊品質不同，造成輸入訊號分布差異。</p></article>
+          <article><span>02</span><h3>Emotion Expression</h3><p>不同說話者與資料收集方式，對相同 Emotion 的聲學表現可能不一致。</p></article>
+          <article><span>03</span><h3>Feature Dependency</h3><p>前面的 MFCC Ablation 顯示，不同 Dataset 對 MFCC Dimension、Hop Length、FFT Size 等設定的敏感度不同。</p></article>
+          <article><span>04</span><h3>Class Distribution</h3><p>不同 Emotion 的樣本數與類別分布不同，也可能造成模型 prediction bias。</p></article>
+        </div>
+        <div class="cross-takeaway-card">
+          <h3>High In-Dataset Accuracy ≠ Strong Cross-Dataset Generalization</h3>
+          <p>模型在單一資料集內的高 Accuracy，無法直接代表對 unseen speech domain 具有相同的泛化能力。</p>
+          <p>Cross-dataset experiment 顯示，Dataset Domain 本身是影響 Speech Emotion Recognition 的重要因素。</p>
+        </div>
+      </section>
+
+      <section id="findings" class="section ser-section">
+        <div class="section-heading">
+          <p class="eyebrow">Key Findings</p>
+          <h2>關鍵發現</h2>
+        </div>
+        <div class="key-finding-grid">
+          <article><h3>Reproduction ≠ Generalization</h3><p>重現接近論文的 Accuracy，不代表模型真的能泛化到 unseen speech。</p></article>
+          <article><h3>Evaluation Protocol Matters</h3><p>資料切分方式可能大幅影響最終結果。</p></article>
+          <article><h3>Dataset Domain Matters</h3><p>模型表現不只受到模型架構影響，也受到語料特徵與 Dataset Domain 影響。</p></article>
+        </div>
+      </section>
+
+      <section class="section ser-section">
+        <div class="section-heading">
+          <p class="eyebrow">What I Learned</p>
+          <h2>實作收穫</h2>
+        </div>
+        <div class="learned-grid">
+          <article><h3>Paper Reproduction</h3><p>從論文描述自行建立資料處理、特徵擷取、訓練與評估流程。</p></article>
+          <article><h3>Experimental Design</h3><p>透過 leakage-free evaluation 與 ablation study 檢查實驗設定是否合理。</p></article>
+          <article><h3>Generalization Analysis</h3><p>透過 cross-dataset experiment 發現單一資料集高 Accuracy 與真正泛化能力之間的差異。</p></article>
+        </div>
+        <p class="ser-highlight-note">透過論文重現與後續實驗，我更理解模型效能不只取決於架構，資料切分、聲學特徵設定與 Dataset Domain 都可能大幅影響結果。</p>
+      </section>
+
+      <section id="github" class="section ser-section">
+        <div class="github-card">
+          <p class="eyebrow">GitHub</p>
+          <h2>Speech Emotion Recognition｜MFCC × 1D CNN</h2>
+          <p>完整資料處理、訓練、ablation 與 cross-dataset experiment 程式碼整理於 GitHub repository。</p>
+          <div class="hero-actions">
+            <a class="button primary" href="https://github.com/loweiwei/ser-1d-cnn-mfcc" target="_blank" rel="noreferrer">GitHub</a>
+            <a class="button secondary" href="https://github.com/loweiwei/ser-1d-cnn-mfcc" target="_blank" rel="noreferrer">View Project</a>
+            <a class="button secondary" href="https://drive.google.com/file/d/1RSIoCS1FJ7HjVhfa-K2TyYRo055mbSdd/view?usp=sharing" target="_blank" rel="noreferrer">專題簡報</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="lightbox-ser-pipeline" class="lightbox" aria-label="SER 整體 Pipeline 放大">
+      <a class="lightbox-close" href="#reproduction">×</a>
+      <img src="images/SER/SER_PIPLINE.png" alt="SER overall pipeline enlarged">
+    </div>
+    <div id="lightbox-confusion-matrix" class="lightbox" aria-label="Cross-Dataset Confusion Matrix 放大">
+      <a class="lightbox-close" href="#discussion">×</a>
+      <img src="images/SER/CONFUSE_MATRIX.png" alt="Cross-dataset confusion matrix enlarged">
+    </div>
+
+    <footer class="footer"><p>© 2026 羅暐媁. Built with GitHub Pages.</p></footer>
+  </body>
+</html>

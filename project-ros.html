@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="ROS2 自主機器人專題詳細頁：RGB-D 感知、SLAM、定位、路徑規劃、任務決策與機械手臂控制。">
+    <title>ROS2 自主機器人 | 羅暐媁</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav" aria-label="主要導覽">
+        <a class="logo" href="index.html">LOWEIWEI</a>
+        <div class="nav-links">
+          <a href="index.html">首頁</a>
+          <a href="journey.html">學期經歷</a>
+          <a class="active" href="projects.html">作品集</a>
+          <a href="resume.html">履歷聯絡</a>
+        </div>
+      </nav>
+    </header>
+
+    <nav class="research-subnav" aria-label="ROS2 自主機器人頁面導覽">
+      <a href="#overview">Overview</a>
+      <a href="#tasks">Tasks</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#planning">Planning</a>
+      <a href="#demo">Demo</a>
+    </nav>
+
+    <main class="ros-page">
+      <section id="overview" class="section ros-hero">
+        <div class="ros-hero-copy">
+          <a class="back-link" href="projects.html">← 回作品集</a>
+          <p class="eyebrow">ROS2 / Autonomous Navigation / Manipulation</p>
+          <h1>ROS2 自主機器人</h1>
+          <h2>跨校（清大）機器導航與探索期末專題</h2>
+          <p class="hero-text">整合 RGB-D 感知、SLAM、定位、路徑規劃與機械手臂控制，使機器人能自主完成搜尋、導航、抓取、過橋與開門等任務。</p>
+          <div class="tag-list research-tags">
+            <span>ROS2</span>
+            <span>RGB-D</span>
+            <span>YOLO</span>
+            <span>SLAM</span>
+            <span>AMCL</span>
+            <span>Nav2</span>
+            <span>Hybrid A*</span>
+            <span>Grid A*</span>
+            <span>Visual Servo</span>
+            <span>2D IK</span>
+          </div>
+          <div class="hero-actions">
+            <a class="button primary" href="https://github.com/loweiwei/pros_portfolio" target="_blank" rel="noreferrer">GitHub</a>
+            <a class="button secondary" href="https://youtu.be/gCjPJTPFgRE" target="_blank" rel="noreferrer">Demo Video</a>
+          </div>
+        </div>
+        <a class="ros-image-card hero-slot" href="#lightbox-ros-hero" aria-label="放大 ROS2 專題主畫面">
+          <img src="images/POS2/hero.png" alt="ROS2 自主機器人 Unity 與機器人 Demo 畫面">
+          <span>Unity / Robot Demo 畫面</span>
+        </a>
+      </section>
+
+      <section id="tasks" class="section ros-section">
+        <div class="section-heading">
+          <p class="eyebrow">Demo Tasks</p>
+          <h2>三項任務</h2>
+        </div>
+        <div class="ros-task-grid">
+          <article class="ros-task-card">
+            <div class="ros-task-body">
+              <p class="eyebrow">Task 1</p>
+              <h3>Bear Recovery</h3>
+              <p>搜尋 Bear → 導航至目標附近 → 視覺對準 → 抓取 → 返回起點</p>
+              <div class="status-list">
+                <span class="status-done">Locate & Observe：完成</span>
+                <span class="status-done">Recovery：完成</span>
+              </div>
+            </div>
+          </article>
+          <article class="ros-task-card">
+            <div class="ros-task-body">
+              <p class="eyebrow">Task 2</p>
+              <h3>Bridge Recovery</h3>
+              <p>導航至橋前 → 辨識橋面入口 → 對正並上橋 → 搜尋 Bear → 抓取 → 下橋</p>
+              <div class="status-list">
+                <span class="status-done">Ascent：完成</span>
+                <span class="status-done">Descent：完成</span>
+                <span class="status-partial">Recovery：Demo 當天未完成</span>
+              </div>
+            </div>
+          </article>
+          <article class="ros-task-card">
+            <div class="ros-task-body">
+              <p class="eyebrow">Task 3</p>
+              <h3>Door Unlock</h3>
+              <p>導航至門前 → YOLO 辨識門把 → 視覺對準 → 手臂按壓門把 → 推門</p>
+              <div class="status-list">
+                <span class="status-done">Locate & Observe：完成</span>
+                <span class="status-done">Unlock：完成</span>
+                <span class="status-done">Clear：完成</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section ros-section two-column-research ros-mapping-section">
+        <div class="research-copy">
+          <p class="eyebrow">Pre-task Mapping</p>
+          <h2>任務前建立可導航地圖</h2>
+          <p>正式執行任務前，先利用 LiDAR、Odometry 與 TF，透過 SLAM Toolbox 建立 Occupancy Map，再將地圖儲存供後續定位與導航使用。</p>
+          <div class="ros-vertical-flow">
+            <span>LiDAR + Odom + TF</span>
+            <span>SLAM Toolbox</span>
+            <span>Occupancy Map</span>
+            <span>Saved Map</span>
+          </div>
+        </div>
+        <div class="ros-media-pair single-media">
+          <a class="ros-image-card" href="#lightbox-occupancy-map" aria-label="放大 Occupancy Map">
+            <img src="images/POS2/occupancy-map.png" alt="ROS2 自主機器人任務前建立的 Occupancy Map">
+            <span>Occupancy Map</span>
+          </a>
+        </div>
+      </section>
+
+      <section id="pipeline" class="section ros-section ros-pipeline-section">
+        <div class="section-heading">
+          <p class="eyebrow">Main System Pipeline</p>
+          <h2>從定位、感知到下一步行動</h2>
+        </div>
+        <div class="ros-pipeline-layout">
+          <div class="ros-step-stack">
+            <article><span>01</span><div><h3>Localization</h3><p>載入地圖，透過 AMCL 持續估計 Robot Pose，並記錄 Home Pose。</p></div></article>
+            <article><span>02</span><div><h3>TaskController</h3><p>依狀態判斷搜尋、導航、過橋、抓取或開門階段，並設定 YOLO 辨識目標。</p></div></article>
+            <article><span>03</span><div><h3>RGB-D + YOLO</h3><p>執行 Detection / Segmentation，取得 Target Position、Distance、Bridge Entry、Knob Offset。</p></div></article>
+            <article><span>04</span><div><h3>TaskController Decision</h3><p>整合 State、Robot Pose、Map、YOLO 與 Depth，決定下一步行動。</p></div></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section ros-section">
+        <div class="section-heading">
+          <p class="eyebrow">Decision Pipeline</p>
+          <h2>TaskController 如何決策</h2>
+        </div>
+        <div class="decision-lanes">
+          <article>
+            <span>01</span>
+            <h3>Explore / Search</h3>
+            <p>尚未找到目標時，以 Frontier / Rotate Search 搭配 YOLO 搜尋；找到後更新 Target 並重新決策。</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Map Planning</h3>
+            <p>目標距離較遠時使用 Hybrid A*；失敗時 fallback 至 Grid A*，再沿 Waypoints 前往目標附近。</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Close-range Action</h3>
+            <p>接近目標後改用 YOLO delta_x 與 Depth 進行 Visual Servo，完成置中、接近、抓取或操作。</p>
+          </article>
+        </div>
+        <div class="ros-execution-flow">
+          <span>Task Execution</span>
+          <span>Grab / Return / Cross / Press / Push</span>
+          <span>State Transition</span>
+          <span>Next State</span>
+        </div>
+        <div class="ros-loop-note">
+          <strong>任務未完成時：</strong>
+          <span>Update YOLO Target / Mode → RGB-D + YOLO Loop</span>
+        </div>
+      </section>
+
+      <section id="planning" class="section ros-section">
+        <div class="section-heading">
+          <p class="eyebrow">Hybrid A* Planning Results</p>
+          <h2>規劃成果</h2>
+        </div>
+        <div class="planning-gallery">
+          <figure>
+            <a class="ros-image-card planning-slot" href="#lightbox-plan-bear" aria-label="放大前往 Bear 的成功規劃">
+              <img src="images/POS2/plan-bear.png" alt="Hybrid A* 前往 Bear 的成功規劃">
+            </a>
+            <figcaption>前往 Bear 的成功規劃</figcaption>
+          </figure>
+          <figure>
+            <a class="ros-image-card planning-slot" href="#lightbox-plan-return" aria-label="放大抓取 Task 1 Bear 後 Return Home">
+              <img src="images/POS2/plan-return-home.png" alt="Hybrid A* 抓取 Task 1 Bear 後 Return Home 規劃">
+            </a>
+            <figcaption>抓取 Task 1 Bear 後 Return Home</figcaption>
+          </figure>
+          <figure>
+            <a class="ros-image-card planning-slot" href="#lightbox-plan-bridge" aria-label="放大前往橋前 staging">
+              <img src="images/POS2/plan-bridge.png" alt="Hybrid A* 前往橋前 staging 規劃">
+            </a>
+            <figcaption>前往橋前 staging</figcaption>
+          </figure>
+          <figure>
+            <a class="ros-image-card planning-slot" href="#lightbox-plan-door" aria-label="放大前往門前 staging">
+              <img src="images/POS2/plan-door.png" alt="Hybrid A* 前往門前 staging 規劃">
+            </a>
+            <figcaption>前往門前 staging</figcaption>
+          </figure>
+        </div>
+        <div class="planning-legend" aria-label="Hybrid A* debug map legend">
+          <span><i class="legend-free"></i>白色：Free Space</span>
+          <span><i class="legend-obstacle"></i>黑色：Obstacle</span>
+          <span><i class="legend-closed"></i>黃色：Closed Set</span>
+          <span><i class="legend-open"></i>藍色：Open Set</span>
+          <span><i class="legend-path"></i>紅色：Final Path</span>
+        </div>
+      </section>
+
+      <section class="section ros-section">
+        <div class="section-heading">
+          <p class="eyebrow">Core Technologies</p>
+          <h2>核心技術</h2>
+        </div>
+        <div class="tech-card-grid">
+          <article><h3>系統整合</h3><div class="tech-tags"><span>ROS 2 Humble</span><span>rclpy</span><span>Topic / Service / Action</span><span>TF2</span><span>Docker Compose</span></div></article>
+          <article><h3>建圖與定位</h3><div class="tech-tags"><span>LiDAR</span><span>SLAM Toolbox</span><span>Occupancy Grid Map</span><span>Map Saver</span><span>AMCL</span><span>Nav2</span></div></article>
+          <article><h3>視覺與 RGB-D 感知</h3><div class="tech-tags"><span>YOLO Detection</span><span>Segmentation</span><span>OpenCV</span><span>Depth</span><span>Camera Intrinsics</span><span>3D Target Position</span></div></article>
+          <article><h3>路徑規劃與導航</h3><div class="tech-tags"><span>Hybrid A*</span><span>Grid A*</span><span>Footprint Collision Check</span><span>Costmap</span><span>Fallback Planning</span><span>Waypoint Navigation</span></div></article>
+          <article><h3>近距離操作與手臂</h3><div class="tech-tags"><span>Visual Servo</span><span>delta_x + depth</span><span>TF → arm_ik_base</span><span>2D IK</span><span>Pre-grab</span><span>Grab</span><span>Lift</span></div></article>
+          <article><h3>任務決策與容錯</h3><div class="tech-tags"><span>Non-blocking State Machine</span><span>TaskController</span><span>Timeout</span><span>Target Lost</span><span>Outlier Filtering</span><span>Re-plan</span></div></article>
+        </div>
+      </section>
+
+      <section class="section ros-section">
+        <div class="section-heading">
+          <p class="eyebrow">Technical Highlights</p>
+          <h2>技術亮點</h2>
+        </div>
+        <div class="highlight-card-grid">
+          <article><h3>RGB-D 3D Target Localization</h3><p>將 YOLO 2D 偵測與 Depth、Camera Geometry、TF 結合，取得可供導航與操作使用的三維目標位置。</p></article>
+          <article><h3>Global Navigation + Local Visual Servoing</h3><p>遠距離使用地圖規劃，近距離改用 YOLO offset 與 depth 精細對準。</p></article>
+          <article><h3>Hybrid A* + Grid A* Fallback</h3><p>Hybrid A* 同時考量位置、朝向與車體 footprint，失敗時切換 Grid A*。</p></article>
+          <article><h3>Non-blocking Task State Machine</h3><p>將搜尋、導航、抓取、過橋與開門拆成不同狀態，持續處理感測資料、Timeout 與失敗重試。</p></article>
+        </div>
+      </section>
+
+      <section class="section ros-section two-column-research future-section">
+        <div class="research-copy">
+          <p class="eyebrow">Future Work</p>
+          <h2>未來展望｜提升動態環境下的自主導航能力</h2>
+        </div>
+        <div class="future-card-grid">
+          <article>
+            <h3>Dynamic Replanning</h3>
+            <p>加入動態障礙物偵測與即時重新規劃，提升移動中面對人物或物體變化時的反應能力。</p>
+          </article>
+          <article>
+            <h3>Adaptive Traversability</h3>
+            <p>改善 LiDAR 在狹窄步道或橋面區域的可通行性判斷，降低欄杆、護欄或障礙邊界造成的誤判。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="demo" class="section ros-section demo-section">
+        <div class="section-heading">
+          <p class="eyebrow">Demo Video</p>
+          <h2>Final Demo</h2>
+        </div>
+        <div class="video-frame">
+          <iframe src="https://www.youtube.com/embed/gCjPJTPFgRE" title="ROS2 自主機器人 Final Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+      </section>
+    </main>
+
+    <div id="lightbox-ros-hero" class="lightbox"><a class="lightbox-close" href="#overview">×</a><img src="images/POS2/hero.png" alt="ROS2 自主機器人 Unity 與機器人 Demo 畫面放大"></div>
+    <div id="lightbox-occupancy-map" class="lightbox"><a class="lightbox-close" href="#pipeline">×</a><img src="images/POS2/occupancy-map.png" alt="Occupancy Map 放大"></div>
+    <div id="lightbox-plan-bear" class="lightbox"><a class="lightbox-close" href="#planning">×</a><img src="images/POS2/plan-bear.png" alt="前往 Bear 的成功規劃放大"></div>
+    <div id="lightbox-plan-return" class="lightbox"><a class="lightbox-close" href="#planning">×</a><img src="images/POS2/plan-return-home.png" alt="Return Home 規劃放大"></div>
+    <div id="lightbox-plan-bridge" class="lightbox"><a class="lightbox-close" href="#planning">×</a><img src="images/POS2/plan-bridge.png" alt="橋前 staging 規劃放大"></div>
+    <div id="lightbox-plan-door" class="lightbox"><a class="lightbox-close" href="#planning">×</a><img src="images/POS2/plan-door.png" alt="門前 staging 規劃放大"></div>
+
+    <footer class="footer"><p>© 2026 羅暐媁. Built with GitHub Pages.</p></footer>
+  </body>
+</html>

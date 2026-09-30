@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="OpenGL 極地場景模擬計算機圖學專題：C++、OpenGL、雪地地形、水面、碰撞、階層動畫與後處理。">
+    <title>OpenGL 極地場景模擬 | 羅暐媁</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav" aria-label="主要導覽">
+        <a class="logo" href="index.html">LOWEIWEI</a>
+        <div class="nav-links">
+          <a href="index.html">首頁</a>
+          <a href="journey.html">學期經歷</a>
+          <a class="active" href="projects.html">作品集</a>
+          <a href="resume.html">履歷聯絡</a>
+        </div>
+      </nav>
+    </header>
+
+    <nav class="research-subnav" aria-label="OpenGL 極地場景模擬頁面導覽">
+      <a href="#overview">Overview</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#modules">Modules</a>
+      <a href="#media">Demo</a>
+    </nav>
+
+    <main class="opengl-page">
+      <section id="overview" class="section opengl-hero">
+        <div>
+          <a class="back-link" href="projects.html">← 回作品集</a>
+          <p class="eyebrow">Computer Graphics / C++ / OpenGL</p>
+          <h1>OpenGL 極地場景模擬</h1>
+          <h2>計算機圖學期末專題</h2>
+          <p class="hero-text">以 C++ 與 OpenGL 3.3 Core Profile 製作可操作的第三人稱極地場景，整合程序化雪地地形、水域與浮冰、OBJ 場景物件、OBB 碰撞、階層式機器人動畫、Framebuffer 後處理霧效與極光視覺。</p>
+          <div class="tag-list research-tags">
+            <span>C++17</span><span>OpenGL 3.3</span><span>GLFW / GLAD</span><span>GLM</span><span>GLSL Shader</span><span>Perlin Noise</span><span>OBB Collision</span><span>FBO Post-process</span>
+          </div>
+          <div class="hero-actions">
+            <a class="button primary" href="https://github.com/loweiwei/OpenGL_Game" target="_blank" rel="noreferrer">GitHub</a>
+            <a class="button secondary" href="https://youtu.be/gWdIwE58c5s" target="_blank" rel="noreferrer">Demo Video</a>
+          </div>
+        </div>
+        <a class="opengl-cover-figure" href="#lightbox-opengl-cover" aria-label="放大 OpenGL 極地場景封面照">
+          <img src="images/opengl_game/opengl.png" alt="OpenGL 極地場景模擬封面截圖">
+          <span>OpenGL 極地場景模擬</span>
+        </a>
+      </section>
+
+      <section id="architecture" class="section opengl-section">
+        <div class="section-heading">
+          <p class="eyebrow">System Architecture</p>
+          <h2>從主程式到場景模組的分層架構</h2>
+          <p>專案不是單一 shader demo，而是把圖學課程中的場景管理、模型載入、互動控制、碰撞與後處理整合成可操作的 3D 極地場景。</p>
+        </div>
+        <div class="opengl-architecture-map">
+          <article class="architecture-root"><h3>main.cpp</h3><p>建立 window / OpenGL context，載入 shader、texture，建立 Player、Camera、WorldManager，並進入 main loop。</p></article>
+          <div class="architecture-branches">
+            <article><h3>WorldManager</h3><p>建立 tile-based 場景，管理 Terrain、Water、IceMountain、Flag、OBJ objects 與 render 順序。</p></article>
+            <article><h3>Player + Camera</h3><p>處理 WASD、跳躍、重力、第三人稱相機、地形高度修正與玩家 OBB。</p></article>
+            <article><h3>Render Systems</h3><p>Terrain / Water / Object / Robot / Post-process 分 pass 繪製，最後輸出至螢幕。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section id="pipeline" class="section opengl-section">
+        <div class="section-heading">
+          <p class="eyebrow">Frame Pipeline</p>
+          <h2>每一幀的更新與繪製流程</h2>
+        </div>
+        <div class="opengl-flow-grid">
+          <article>
+            <p class="eyebrow">Update Pipeline</p>
+            <div class="opengl-vertical-flow"><span>Input</span><span>Player Movement</span><span>OBB Collision</span><span>Terrain Height Fix</span><span>TPS Camera Follow</span></div>
+          </article>
+          <article>
+            <p class="eyebrow">Render Pipeline</p>
+            <div class="opengl-vertical-flow"><span>FBO beginScene</span><span>Terrain / Ice Pass</span><span>Water Pass</span><span>Object + Player Pass</span><span>Fog + Aurora Post-process</span><span>Present</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="modules" class="section opengl-section">
+        <div class="section-heading">
+          <p class="eyebrow">Module Design</p>
+          <h2>各模組理念與責任</h2>
+        </div>
+        <div class="opengl-module-grid">
+          <article><span>01</span><h3>Terrain System</h3><p>以 Perlin noise 產生雪地高度，再用 flat / slope / crevasse / ridge masks 控制地形語意，而不是只依賴隨機 noise。</p></article>
+          <article><span>02</span><h3>Water System</h3><p>由 WaterManager 建立湖泊、河流、裂縫水面與大範圍水域，讓極地場景有不同尺度的水面表現。</p></article>
+          <article><span>03</span><h3>Scene Assets</h3><p>透過 tinyobjloader 與 stb_image 載入 tent、campfire、tree、pier、ladder 等 OBJ / texture，並為物件建立 OBB。</p></article>
+          <article><span>04</span><h3>Player & Collision</h3><p>移動時建立 future OBB，使用 OBB vs OBB SAT 分軸檢測，分別處理水平碰撞、平台落地與天花板碰撞。</p></article>
+          <article><span>05</span><h3>RobotModel</h3><p>以 cube 與 parent-child transform 組出階層式機器人，支援 walk、run、bow 與手動關節旋轉。</p></article>
+          <article><span>06</span><h3>Post-process</h3><p>先將場景畫入 framebuffer，再讀取 color / depth texture 重建世界座標，套用邊界霧、高度霧與極光。</p></article>
+        </div>
+      </section>
+
+      <section class="section opengl-section">
+        <div class="section-heading">
+          <p class="eyebrow">Layered Responsibility</p>
+          <h2>分工層級</h2>
+        </div>
+        <div class="opengl-layer-stack">
+          <article><strong>Application Layer</strong><span>main loop / input / shader loading / resource setup</span></article>
+          <article><strong>Scene Layer</strong><span>WorldManager / tiles / terrain / water / objects / render order</span></article>
+          <article><strong>Interaction Layer</strong><span>Player / Camera / OBB collision / terrain height correction</span></article>
+          <article><strong>Visual Layer</strong><span>GLSL shaders / textures / FBO fog / aurora post-process</span></article>
+        </div>
+      </section>
+
+      <section id="media" class="section opengl-section">
+        <div class="section-heading">
+          <p class="eyebrow">Demo & Screenshots</p>
+          <h2>Demo 影片與封面截圖</h2>
+          <p>展示角色操作、第三人稱相機、極地場景、水面、地形、霧效與極光等視覺效果。</p>
+        </div>
+        <div class="opengl-demo-layout">
+          <div class="video-frame"><iframe src="https://www.youtube.com/embed/gWdIwE58c5s" title="OpenGL 極地場景模擬 Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+          <a class="opengl-cover-figure" href="#lightbox-opengl-cover" aria-label="放大 OpenGL 極地場景封面照">
+            <img src="images/opengl_game/opengl.png" alt="OpenGL 極地場景模擬封面截圖">
+            <span>專題封面截圖</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="section opengl-section">
+        <div class="detail-callout">
+          <p class="eyebrow">Course Result</p>
+          <h2>計算機圖學成果</h2>
+          <div class="evidence-grid">
+            <article><h3>成績</h3><p>95 分</p></article>
+            <article><h3>排名</h3><p>5 / 36</p></article>
+            <article><h3>重點能力</h3><p>OpenGL rendering pipeline、shader、3D scene integration、collision handling。</p></article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="lightbox-opengl-cover" class="lightbox" aria-label="OpenGL 極地場景封面照放大">
+      <a class="lightbox-close" href="#overview">×</a>
+      <img src="images/opengl_game/opengl.png" alt="OpenGL 極地場景模擬封面截圖放大">
+    </div>
+
+    <footer class="footer"><p>© 2026 羅暐媁. Built with GitHub Pages.</p></footer>
+  </body>
+</html>

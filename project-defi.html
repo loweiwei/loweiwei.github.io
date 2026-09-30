@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="MiniBank DeFi Lending Protocol 專題詳細頁：抵押借貸、流動性池、清算、Reward 與 DAO Governance。">
+    <title>MiniBank｜DeFi Lending Protocol | 羅暐媁</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav" aria-label="主要導覽">
+        <a class="logo" href="index.html">LOWEIWEI</a>
+        <div class="nav-links">
+          <a href="index.html">首頁</a>
+          <a href="journey.html">學期經歷</a>
+          <a class="active" href="projects.html">作品集</a>
+          <a href="resume.html">履歷聯絡</a>
+        </div>
+      </nav>
+    </header>
+
+    <nav class="research-subnav" aria-label="MiniBank 頁面導覽">
+      <a href="#overview">Overview</a>
+      <a href="#system">System</a>
+      <a href="#concepts">LTV / HF</a>
+      <a href="#demo">Demo</a>
+    </nav>
+
+    <main class="defi-page">
+      <section id="overview" class="section defi-hero">
+        <div>
+          <a class="back-link" href="projects.html">← 回作品集</a>
+          <p class="eyebrow">Solidity / DeFi / Governance</p>
+          <h1>MiniBank｜DeFi Lending Protocol</h1>
+          <h2>區塊鏈期末專題｜DeFi MiniBank DApp</h2>
+          <p class="hero-text">以 Smart Contract 實作去中心化借貸協議，整合抵押借款、LP 流動性池、利息、清算、Reward 與 DAO Governance，模擬 DeFi Lending Protocol 的核心資產流與風險控制機制。</p>
+          <div class="tag-list research-tags">
+            <span>Solidity</span>
+            <span>Hardhat</span>
+            <span>DeFi</span>
+            <span>Lending Protocol</span>
+            <span>Smart Contract</span>
+            <span>Liquidity Pool</span>
+            <span>Liquidation</span>
+            <span>DAO Governance</span>
+          </div>
+          <div class="hero-actions">
+            <a class="button primary" href="https://github.com/loweiwei/decentralized-bank-dapp" target="_blank" rel="noreferrer">GitHub</a>
+            <a class="button secondary" href="https://youtu.be/jiWGLXHFcIE" target="_blank" rel="noreferrer">Lending Demo</a>
+            <a class="button secondary" href="https://youtu.be/ZdDnHbZ4dqA" target="_blank" rel="noreferrer">DAO Demo</a>
+          </div>
+        </div>
+        <a class="defi-pipeline-figure" href="#lightbox-defi-pipeline" aria-label="放大 MiniBank 系統架構圖">
+          <img src="images/DEFI/DEFI_PIPLINE.png" alt="MiniBank DeFi Lending Protocol system pipeline">
+          <span>MiniBank System Pipeline</span>
+        </a>
+      </section>
+
+      <section class="section defi-section">
+        <div class="section-heading">
+          <p class="eyebrow">Project Motivation</p>
+          <h2>專題動機與目標</h2>
+          <p>在區塊鏈課程中學習 DeFi 的借貸與流動性機制後，希望進一步實作一套可執行的 Smart Contract 系統，理解抵押、借貸、利息、清算、流動性提供與治理之間如何互相影響。</p>
+        </div>
+      </section>
+
+      <section id="system" class="section defi-section">
+        <div class="section-heading">
+          <p class="eyebrow">MiniBank System Overview</p>
+          <h2>DeFi System Flow / Architecture</h2>
+        </div>
+        <div class="defi-architecture" aria-label="MiniBank DeFi system architecture">
+          <article class="actor-card lp-card">
+            <span>LP</span>
+            <h3>Liquidity Provider</h3>
+            <p>Supply mDAI → 提供流動性 → 取得 aMDAI Share → 獲得 BKT Reward</p>
+          </article>
+          <article class="actor-card borrower-card">
+            <span>Borrower</span>
+            <h3>Collateral Borrowing</h3>
+            <p>Deposit ETH → 根據 LTV 借出 mDAI → Repay Principal + Interest</p>
+          </article>
+          <div class="architecture-core">
+            <p>BankV3</p>
+            <strong>Liquidity Pool</strong>
+            <small>Collateral / Debt / Interest / Reward / Liquidation</small>
+          </div>
+          <article class="actor-card liquidator-card">
+            <span>Liquidator</span>
+            <h3>Risky Debt Handler</h3>
+            <p>Health Factor &lt; 1 時 Repay Risky Debt，取得 ETH Collateral + Liquidation Bonus。</p>
+          </article>
+          <article class="actor-card oracle-card">
+            <span>Price Oracle</span>
+            <h3>ETH/USD Price</h3>
+            <p>計算 Collateral Value、Borrow Limit、Health Factor 與 Liquidation Condition。</p>
+          </article>
+          <article class="actor-card dao-card">
+            <span>DAO / BKT Holder</span>
+            <h3>Governance</h3>
+            <p>Delegate → Propose → Vote → Timelock → 更新協議參數。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section defi-section">
+        <div class="section-heading">
+          <p class="eyebrow">Core Assets</p>
+          <h2>系統主要資產</h2>
+        </div>
+        <div class="asset-card-grid">
+          <article><span>ETH</span><h3>Collateral</h3><p>Borrower 使用 ETH 作為抵押品，決定可借額度與清算風險。</p></article>
+          <article><span>mDAI</span><h3>Liquidity / Borrowing Asset</h3><p>LP 提供 mDAI 流動性，Borrower 借入 mDAI，Liquidator 也使用 mDAI 代償債務。</p></article>
+          <article><span>aMDAI</span><h3>LP Share Token</h3><p>LP Supply mDAI 後取得，代表其在 Liquidity Pool 中的持有份額。</p></article>
+          <article><span>BKT</span><h3>Reward / Governance Token</h3><p>作為 LP / Borrower 獎勵，並提供 DAO Voting Power。</p></article>
+        </div>
+      </section>
+
+      <section class="section defi-section">
+        <div class="section-heading">
+          <p class="eyebrow">Main Participants</p>
+          <h2>主要參與角色</h2>
+        </div>
+        <div class="participant-grid">
+          <article><h3>LP</h3><p>提供 mDAI 流動性，取得 aMDAI Share 與 BKT Reward。</p></article>
+          <article><h3>Borrower</h3><p>抵押 ETH 借入 mDAI，並維持安全的 Health Factor。</p></article>
+          <article><h3>Liquidator</h3><p>當 Borrower 抵押不足時代償部分債務，並取得抵押品與 Liquidation Bonus。</p></article>
+          <article><h3>DAO / BKT Holder</h3><p>使用 BKT 參與 Proposal 與 Voting，調整協議參數。</p></article>
+          <article><h3>BankV3</h3><p>管理 Liquidity Pool、Collateral、Debt、Interest、Reward、Liquidation 與 Governance。</p></article>
+          <article class="oracle-mini-card"><h3>Oracle</h3><p>提供 ETH/USD Price。</p></article>
+        </div>
+      </section>
+
+      <section id="concepts" class="section defi-section">
+        <div class="section-heading">
+          <p class="eyebrow">Key Concepts</p>
+          <h2>LTV / Health Factor</h2>
+        </div>
+        <div class="concept-card-grid">
+          <article class="concept-card">
+            <p class="eyebrow">LTV</p>
+            <h3>Loan-to-Value</h3>
+            <p>決定抵押品最多能借出多少資產。</p>
+            <div class="formula-box">Borrow Limit = Collateral Value × LTV</div>
+            <div class="mini-chain"><span>ETH Collateral</span><span>Borrow Limit</span><span>Borrow mDAI</span></div>
+          </article>
+          <article class="concept-card">
+            <p class="eyebrow">Health Factor</p>
+            <h3>清算風險指標</h3>
+            <p>衡量目前抵押品是否足以支撐債務。</p>
+            <div class="hf-status safe">HF ≥ 1 → Safe</div>
+            <div class="hf-status danger">HF &lt; 1 → Liquidatable</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section defi-section">
+        <div class="section-heading">
+          <p class="eyebrow">Lending Flow</p>
+          <h2>借貸流程</h2>
+        </div>
+        <div class="lending-flow">
+          <span>LP Supply mDAI</span>
+          <span>Liquidity Pool</span>
+          <span>Borrower Deposit ETH</span>
+          <span>Borrow mDAI</span>
+          <span>Repay + Interest</span>
+          <span>LP 收益 / Protocol Reserve</span>
+        </div>
+        <div class="liquidation-flow">
+          <strong>Health Factor &lt; 1</strong>
+          <span>Liquidator Repay Debt</span>
+          <span>Receive ETH Collateral + Bonus</span>
+        </div>
+      </section>
+
+      <section class="section defi-section">
+        <div class="section-heading">
+          <p class="eyebrow">Incentive & Revenue Distribution</p>
+          <h2>參與誘因與收益分配</h2>
+        </div>
+        <div class="revenue-card-grid">
+          <article><h3>LP</h3><p>提供流動性，取得 aMDAI Share、部分借款利息與 BKT Reward。</p></article>
+          <article><h3>Borrower</h3><p>保留 ETH Exposure，同時取得可使用的 mDAI 流動性。</p></article>
+          <article><h3>Liquidator</h3><p>協助處理高風險債務，取得 Collateral 與 Liquidation Bonus。</p></article>
+          <article><h3>Protocol / DAO</h3><p>從利息與清算機制中累積 Protocol Reserve，並透過 BKT Governance 管理協議參數。</p></article>
+        </div>
+        <p class="defi-highlight-note">LP 提供的不是單純「存款」，而是可供 Borrower 使用的流動性；作為交換，LP 取得資金池份額並分享協議收益。</p>
+      </section>
+
+      <section class="section defi-section">
+        <div class="section-heading">
+          <p class="eyebrow">DAO Governance</p>
+          <h2>DAO Governance</h2>
+        </div>
+        <div class="governance-flow">
+          <span>BKT Holder</span>
+          <span>Delegate Voting Power</span>
+          <span>Proposal</span>
+          <span>Voting</span>
+          <span>Timelock</span>
+          <span>Execute</span>
+        </div>
+        <div class="governance-tags">
+          <span>Interest Rate</span>
+          <span>Reserve Factor</span>
+          <span>Reward Parameters</span>
+        </div>
+      </section>
+
+      <section id="demo" class="section defi-section">
+        <div class="section-heading">
+          <p class="eyebrow">Demo Videos</p>
+          <h2>Final Demo</h2>
+        </div>
+        <div class="demo-video-grid">
+          <article class="demo-video-card">
+            <div class="video-frame"><iframe src="https://www.youtube.com/embed/jiWGLXHFcIE" title="MiniBank Lending and Liquidation Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+            <h3>Lending & Liquidation Demo</h3>
+            <div class="demo-tags"><span>Deposit</span><span>Borrow</span><span>Repay</span><span>Liquidation</span></div>
+          </article>
+          <article class="demo-video-card">
+            <div class="video-frame"><iframe src="https://www.youtube.com/embed/ZdDnHbZ4dqA" title="MiniBank DAO Governance Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+            <h3>DAO Governance Demo</h3>
+            <div class="demo-tags"><span>Proposal</span><span>Voting</span><span>Governance Execution</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section defi-section">
+        <div class="section-heading">
+          <p class="eyebrow">What I Learned</p>
+          <h2>實作收穫</h2>
+        </div>
+        <div class="learned-grid">
+          <article><h3>Smart Contract State Management</h3><p>理解借貸、抵押、利息與清算之間的狀態變化與一致性。</p></article>
+          <article><h3>DeFi Risk Control</h3><p>實作 LTV、Health Factor 與 Liquidation，理解抵押型借貸的風險控制方式。</p></article>
+          <article><h3>Protocol Integration</h3><p>將 Liquidity Pool、Reward、Liquidation 與 DAO Governance 整合成完整協議流程。</p></article>
+        </div>
+      </section>
+
+      <section class="section defi-section">
+        <div class="section-heading">
+          <p class="eyebrow">Future Work</p>
+          <h2>未來展望</h2>
+        </div>
+        <div class="future-card-grid">
+          <article><h3>Dynamic Interest Rate</h3><p>根據資金利用率動態調整借貸利率。</p></article>
+          <article><h3>Multiple Collateral Assets</h3><p>支援更多抵押資產與不同 Oracle Price Feed。</p></article>
+          <article><h3>Testing & Security</h3><p>加入 fuzz testing、invariant testing 與更完整的 Smart Contract 安全測試。</p></article>
+        </div>
+        <p class="defi-highlight-note">未來希望讓 MiniBank 從課程中的 DeFi Prototype，進一步發展為具有更完整風險控制與測試機制的 Lending Protocol。</p>
+      </section>
+    </main>
+
+    <div id="lightbox-defi-pipeline" class="lightbox" aria-label="MiniBank 系統架構圖放大">
+      <a class="lightbox-close" href="#overview">×</a>
+      <img src="images/DEFI/DEFI_PIPLINE.png" alt="MiniBank DeFi Lending Protocol system pipeline enlarged">
+    </div>
+
+    <footer class="footer"><p>© 2026 羅暐媁. Built with GitHub Pages.</p></footer>
+  </body>
+</html>

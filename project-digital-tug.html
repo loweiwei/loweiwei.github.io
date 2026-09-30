@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="數位電路期末專題：以 TTL 數位邏輯電路製作雙人即時拔河遊戲。">
+    <title>數位電路期末專題｜拔河遊戲製作 | 羅暐媁</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav" aria-label="主要導覽">
+        <a class="logo" href="index.html">LOWEIWEI</a>
+        <div class="nav-links">
+          <a href="index.html">首頁</a>
+          <a href="journey.html">學期經歷</a>
+          <a class="active" href="projects.html">作品集</a>
+          <a href="resume.html">履歷聯絡</a>
+        </div>
+      </nav>
+    </header>
+
+    <nav class="research-subnav" aria-label="數位電路拔河遊戲頁面導覽">
+      <a href="#overview">Overview</a>
+      <a href="#demo">Demo</a>
+      <a href="#flow">Game Flow</a>
+      <a href="#circuit">Circuit</a>
+    </nav>
+
+    <main class="circuit-page">
+      <section id="overview" class="section circuit-hero">
+        <div class="circuit-hero-copy">
+          <a class="back-link" href="projects.html">← 回作品集</a>
+          <p class="eyebrow">TTL Digital Logic / Hardware Game</p>
+          <h1>數位電路期末專題｜拔河遊戲製作</h1>
+          <p class="hero-text">以 TTL 數位邏輯電路設計雙人即時拔河遊戲。兩隊透過按鍵競速控制 LED 位置，率先將指示燈推至對方終點者獲勝並自動加分；若 15 秒內未分出勝負，系統會自動停止玩家輸入並進入隨機決勝。</p>
+          <div class="tag-list research-tags">
+            <span>TTL Digital Logic</span>
+            <span>74LS190 Up/Down Counter</span>
+            <span>Flip-Flop</span>
+            <span>Decoder</span>
+            <span>Logic Gates</span>
+            <span>Clock / Timer</span>
+            <span>LED</span>
+            <span>7-Segment Display</span>
+          </div>
+        </div>
+        <a class="circuit-image-card hero-slot" href="#lightbox-breadboard" aria-label="放大 Breadboard 實體電路照片">
+          <img src="images/CIRCUIT/breadboard.png" alt="數位電路拔河遊戲 Breadboard 實體電路照片">
+          <span>實體 Breadboard 電路照片</span>
+        </a>
+      </section>
+
+      <section id="demo" class="section circuit-section demo-section">
+        <div class="section-heading">
+          <p class="eyebrow">Demo Video</p>
+          <h2>Demo</h2>
+          <p>展示雙人按鍵競速、LED 拔河位置移動、自動計分，以及 15 秒逾時後的隨機決勝流程。</p>
+        </div>
+        <div class="video-frame">
+          <iframe src="https://www.youtube.com/embed/CQc4FMj3tbs" title="數位電路拔河遊戲 Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+      </section>
+
+      <section id="flow" class="section circuit-section">
+        <div class="section-heading">
+          <p class="eyebrow">Game Flow</p>
+          <h2>遊戲控制流程</h2>
+        </div>
+        <div class="game-flowchart" aria-label="拔河遊戲控制流程圖">
+          <div class="flow-node start">Start / Reset</div>
+          <div class="flow-arrow-down">↓</div>
+          <div class="flow-node">A / B Button Input</div>
+          <div class="flow-arrow-down">↓</div>
+          <div class="flow-node">Up / Down Counter</div>
+          <div class="flow-arrow-down">↓</div>
+          <div class="flow-node">LED Position Display</div>
+          <div class="flow-arrow-down">↓</div>
+          <div class="flow-decision">到達終點？</div>
+          <div class="flow-branches">
+            <div class="flow-branch yes-branch">
+              <span>Yes</span>
+              <div class="flow-node">勝負判定</div>
+              <div class="flow-node">自動加分</div>
+              <div class="flow-node next-round">下一局</div>
+            </div>
+            <div class="flow-branch no-branch">
+              <span>No</span>
+              <div class="flow-decision small-decision">15 秒到？</div>
+              <div class="flow-subbranches">
+                <div>
+                  <em>No</em>
+                  <div class="flow-node">繼續遊戲</div>
+                </div>
+                <div>
+                  <em>Yes</em>
+                  <div class="flow-node">暫停玩家輸入</div>
+                  <div class="flow-node">隨機決勝機制</div>
+                  <div class="flow-node">自動加分</div>
+                  <div class="flow-node next-round">下一局</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section circuit-section">
+        <div class="section-heading">
+          <p class="eyebrow">Core Technologies</p>
+          <h2>核心技術</h2>
+        </div>
+        <div class="circuit-tech-grid">
+          <article><h3>Up / Down Counter</h3><p>利用 74LS190 控制拔河位置，根據兩隊按鍵輸入改變計數方向。</p></article>
+          <article><h3>Flip-Flop / State Control</h3><p>保存遊戲狀態，控制開始、暫停、勝負與下一局。</p></article>
+          <article><h3>LED Position Display</h3><p>將 Counter 狀態轉換為 LED 位置，直觀呈現目前拔河結果。</p></article>
+          <article><h3>15-second Timer</h3><p>利用 Clock 與 Counter 建立遊戲時間限制。</p></article>
+          <article><h3>Automatic Scoring</h3><p>達到終點或完成隨機決勝後，自動更新勝方分數。</p></article>
+          <article><h3>Pseudo-random Decision</h3><p>15 秒內未分出勝負時，透過數位邏輯進行隨機勝負判定。</p></article>
+        </div>
+      </section>
+
+      <section class="section circuit-section two-column-research">
+        <div class="research-copy">
+          <p class="eyebrow">Design Adaptation</p>
+          <h2>電路改編設計</h2>
+          <p>參考既有數位拔河電路的計數與 LED 顯示架構，保留 Up/Down Counter 控制位置的核心設計，並依遊戲需求重新規劃控制邏輯，加入 15 秒限時、自動暫停、自動計分與隨機決勝機制，完成具完整遊戲流程的改良版本。</p>
+          <p>改編過程中需重新整合 Counter、Flip-Flop、Decoder 與 Logic Gates 之間的訊號控制，使新增功能能與原有電路協同運作。</p>
+        </div>
+        <div class="circuit-adaptation-card">
+          <span>Original Tug Circuit</span>
+          <span>Counter + LED Display</span>
+          <span>Timer / Pause / Scoring</span>
+          <span>Pseudo-random Decision</span>
+        </div>
+      </section>
+
+      <section id="circuit" class="section circuit-section">
+        <div class="section-heading">
+          <p class="eyebrow">Circuit Design</p>
+          <h2>Circuit Design</h2>
+          <p>以 Counter、Decoder、Flip-Flop 與 Logic Gates 組成控制邏輯，並使用 LED 與 7-Segment Display 呈現遊戲狀態與分數。</p>
+        </div>
+        <div class="circuit-diagram-grid">
+          <a class="circuit-image-card diagram-slot" href="#lightbox-reference-circuit" aria-label="放大參考電路圖">
+            <img src="images/CIRCUIT/reference-circuit.png" alt="數位電路拔河遊戲參考電路圖">
+            <span>參考電路圖</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="section circuit-section">
+        <div class="section-heading">
+          <p class="eyebrow">What I Learned</p>
+          <h2>實作收穫</h2>
+        </div>
+        <div class="learned-grid">
+          <article><h3>Digital Logic Integration</h3><p>將 Counter、Flip-Flop、Decoder 與 Logic Gates 組合成完整互動系統。</p></article>
+          <article><h3>Hardware Debugging</h3><p>實際處理接線、時序、按鍵輸入與狀態控制問題。</p></article>
+          <article><h3>Function Extension</h3><p>從既有架構出發，加入計時、自動計分與隨機決勝等額外功能。</p></article>
+        </div>
+      </section>
+    </main>
+
+    <div id="lightbox-breadboard" class="lightbox"><a class="lightbox-close" href="#overview">×</a><img src="images/CIRCUIT/breadboard.png" alt="Breadboard 實體電路照片放大"></div>
+    <div id="lightbox-reference-circuit" class="lightbox"><a class="lightbox-close" href="#circuit">×</a><img src="images/CIRCUIT/reference-circuit.png" alt="參考電路圖放大"></div>
+
+    <footer class="footer"><p>© 2026 羅暐媁. Built with GitHub Pages.</p></footer>
+  </body>
+</html>

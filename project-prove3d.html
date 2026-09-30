@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="PROVE-3D 研究專案詳細頁：Zero-Shot 3D Visual Grounding 的問題、方法、結果與研究經驗。">
+    <title>PROVE-3D | 羅暐媁</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav" aria-label="主要導覽">
+        <a class="logo" href="index.html">LOWEIWEI</a>
+        <div class="nav-links">
+          <a href="index.html">首頁</a>
+          <a href="journey.html">學期經歷</a>
+          <a class="active" href="projects.html">作品集</a>
+          <a href="resume.html">履歷聯絡</a>
+        </div>
+      </nav>
+    </header>
+
+    <nav class="research-subnav" aria-label="PROVE-3D 頁面導覽">
+        <a href="#overview">Overview</a>
+        <a href="#method">Method</a>
+        <a href="#results">Results</a>
+      </nav>
+
+    <main class="research-page">
+      <section id="overview" class="section research-hero">
+        <div class="research-hero-copy">
+          <a class="back-link" href="projects.html">← 回作品集</a>
+          <p class="eyebrow">Research Project</p>
+          <h1>PROVE-3D</h1>
+          <h2>Progressive Observation and Verification with Evidence for Zero-Shot 3D Visual Grounding</h2>
+          <p class="hero-text">
+            根據自然語言描述，在多視角 RGB-D 場景中逐步尋找並驗證目標物件；當目前視覺證據不足時，主動補充所需觀測，最後完成目標的三維定位。
+          </p>
+          <div class="research-meta-card">
+            <p>國立臺南大學資訊工程學系 116 級畢業專題報告</p>
+            <p>專案編號：NUTN-CSIE-PRJ-116-009</p>
+            <p>組員：羅暐媁、莊旻芳、李安以｜指導老師：林朝興 教授</p>
+          </div>
+          <div class="tag-list research-tags">
+            <span>3D Computer Vision</span>
+            <span>Vision-Language Model</span>
+            <span>RGB-D</span>
+            <span>Zero-Shot 3D Visual Grounding</span>
+            <span>Multi-view Perception</span>
+          </div>
+          <div class="hero-actions">
+            <a class="button primary" href="https://github.com/Min-FangChuang/PROVE-3D" target="_blank" rel="noreferrer">GitHub</a>
+            <a class="button secondary" href="https://drive.google.com/file/d/1ngfcwk6IAwryxdVHKvfLvtcqUB0fge4p/view?usp=drive_link" target="_blank" rel="noreferrer">Paper</a>
+            <a class="button secondary" href="https://drive.google.com/file/d/12PVFTL0T2lt_DgyWR_xtEayBKu8zF0x8/view" target="_blank" rel="noreferrer">中文專題報告</a>
+          </div>
+        </div>
+        <a class="research-figure hero-figure" href="#lightbox-overview" aria-label="放大 PROVE-3D Pipeline 圖">
+          <img src="images/prove3d-pipeline.png" alt="PROVE-3D Pipeline overview">
+          <span>Figure 1. PROVE-3D overview pipeline</span>
+        </a>
+      </section>
+
+      <section class="section research-section two-column-research">
+        <div class="research-copy">
+          <p class="eyebrow">Problem Background</p>
+          <h2>What is Zero-Shot 3D Visual Grounding?</h2>
+          <p>根據自然語言描述，在 3D 場景中找出並定位指定物件。不同於一般物件偵測，3D Visual Grounding 還需理解物件屬性、參考物件與空間關係，從多個相似物件中找出正確目標。</p>
+          <p>Zero-shot 表示不需針對 3D Visual Grounding 額外訓練，而是直接利用預訓練 VLM 完成定位。</p>
+          <p>本研究的核心問題是：多視角影像不一定包含足夠證據；系統需要判斷目前證據是否足夠，並在不足時取得額外觀測。</p>
+        </div>
+        <div class="concept-flow">
+          <div class="research-image-stack">
+            <a class="research-figure image-only" href="#lightbox-query" aria-label="放大 Query 解析圖">
+              <img src="images/PROV3D/QUERY.png" alt="Query 解析後的目標、屬性與空間關係">
+            </a>
+            <a class="research-figure image-only" href="#lightbox-query-scene" aria-label="放大 Query 對應場景圖">
+              <img src="images/PROV3D/Q_PIC.png" alt="Query 所描述場景中的目標物件">
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section research-section two-column-research">
+        <div class="research-copy">
+          <p class="eyebrow">Research Problem</p>
+          <h2>看得到 Target，不代表證據已經足夠</h2>
+          <p>現有 Zero-Shot 3D Visual Grounding 方法多從既有多視角影像中挑選「看得到目標」的視角，再交由 VLM 判斷。然而，看得到目標不代表已具備足夠證據理解完整語言描述。</p>
+          <p>當 Query 涉及物件屬性、參考物件或空間關係時，例如「桌子旁邊的紅色椅子」，只觀察目標本身可能無法確認正確物件。固定處理大量視角，也可能增加不必要的觀測與推理成本。</p>
+          <div class="research-question">
+            如何在定位過程中判斷目前視覺證據是否足夠，並在資訊不足時，只補充真正需要的觀測？
+          </div>
+          <p>PROVE-3D 因此將 3D Visual Grounding 視為漸進式觀測與驗證的過程，根據缺失的視覺證據動態補充視角，並在證據足夠時提早停止處理。</p>
+        </div>
+        <div class="comparison-card">
+          <div><h3>Conventional</h3><p>Target Visible → Grounding</p></div>
+          <div><h3>PROVE-3D</h3><p>Target Visible → Evidence Enough? → No → Acquire Additional Observation → Re-verify</p></div>
+          <a class="research-figure image-only" href="#lightbox-conventional" aria-label="放大 Conventional vs PROVE-3D 比較圖">
+            <img src="images/PROV3D/CONVENTIONAL_VS_OURS.png" alt="Conventional methods versus PROVE-3D comparison">
+          </a>
+        </div>
+      </section>
+
+      <section id="method" class="section research-section">
+        <div class="section-heading">
+          <p class="eyebrow">Core Idea</p>
+          <h2>Progressive Observation + Evidence Verification</h2>
+          <p>研究目標是建立一套兼顧三維定位準確度與觀測效率的 zero-shot 3D visual grounding framework。</p>
+        </div>
+        <div class="research-card-grid three-cards">
+          <article class="research-card"><h3>建立候選物件</h3><p>從多視角 RGB-D 中偵測目標類別，並透過 Cross-view Matching 將不同視角中的同一物件合併成 Candidate。</p></article>
+          <article class="research-card"><h3>驗證視覺證據</h3><p>VLM 根據 Target、Attribute、Reference Object 與 Spatial Relation 判斷 Candidate 是否符合 Query。</p></article>
+          <article class="research-card"><h3>缺什麼，就補什麼</h3><p>若 VLM 判斷證據不足，系統會取得新的 Target View 或 Surrounding View，再重新驗證。</p></article>
+        </div>
+      </section>
+
+      <section class="section research-section pipeline-overview-section">
+        <div class="section-heading">
+          <p class="eyebrow">System Pipeline</p>
+          <h2>PROVE-3D Pipeline</h2>
+          <p>整體流程分為三個主要部分：逐步建立候選、驗證並補充觀測、最後完成 2D-to-3D 定位。</p>
+        </div>
+
+        <article class="pipeline-section-card">
+          <div class="pipeline-section-heading">
+            <p class="pipeline-label">A</p>
+            <div>
+              <h3>逐步讀取場景並建立候選物件</h3>
+              <p class="pipeline-subtitle">Read Unit Create Candidate</p>
+              <p>系統逐步讀取 RGB-D 影像，偵測 Query 中的目標類別，並將不同視角中的同一物件整合成 Candidate。</p>
+            </div>
+          </div>
+          <a class="pipeline-image-card" href="#lightbox-pipeline-a" aria-label="放大 Read Unit Create Candidate 流程圖">
+            <img src="images/PROV3D/Read Unit Create Candidate.png" alt="Read Unit Create Candidate 流程圖">
+          </a>
+          <div class="pipeline-step-row">
+            <article><h4>1. Query Parsing</h4><p>解析 target、attribute、reference object、spatial relation。</p></article>
+            <article><h4>2. Target Detection</h4><p>逐步讀取 RGB-D views，偵測可能的目標物件。</p></article>
+            <article><h4>3. Cross-view Matching</h4><p>將不同視角中的同一物件合併至同一 Candidate；無法匹配則建立新 Candidate。</p></article>
+          </div>
+        </article>
+
+        <article class="pipeline-section-card">
+          <div class="pipeline-section-heading">
+            <p class="pipeline-label">B</p>
+            <div>
+              <h3>候選物件驗證與補充觀測</h3>
+              <p class="pipeline-subtitle">Candidate Refinement</p>
+              <p>建立 Candidate 後，由 VLM 判斷是否符合完整 Query，以及目前證據是否足夠。</p>
+            </div>
+          </div>
+          <p class="pipeline-highlight">證據不足時，不直接決策，而是補充缺少的觀測後再驗證。</p>
+          <a class="pipeline-image-card" href="#lightbox-pipeline-b" aria-label="放大 Candidate Refinement 流程圖">
+            <img src="images/PROV3D/Candidate Refinement .png" alt="Candidate Refinement 流程圖">
+          </a>
+          <div class="pipeline-step-row">
+            <article><h4>1. 環境觀測 Observe Environment</h4><p>補充 Candidate 周圍的 reference object 與 spatial relation 證據。</p></article>
+            <article><h4>2. 候選驗證 VLM Verification</h4><p>根據 Candidate、環境資訊與 Query 判斷：True / False / Unsure。</p></article>
+            <article><h4>3. 缺失證據補充 Evidence Completion</h4><p>若為 Unsure，VLM 分析缺少的條件，選擇 Forward / Yaw 補充觀測視角後重新驗證。</p></article>
+          </div>
+        </article>
+
+        <article class="pipeline-section-card">
+          <div class="pipeline-section-heading">
+            <p class="pipeline-label">C</p>
+            <div>
+              <h3>二維至三維定位</h3>
+              <p class="pipeline-subtitle">2D-to-3D Mapping</p>
+              <p>將確認後 Candidate 的多視角 mask 與 depth 投影至共同 3D 空間，融合並過濾後得到最終 3D Bounding Box。</p>
+            </div>
+          </div>
+          <a class="pipeline-image-card" href="#lightbox-pipeline-c" aria-label="放大 2D-to-3D Mapping 流程圖">
+            <img src="images/PROV3D/2D-to-3D Mapping.png" alt="2D-to-3D Mapping 流程圖">
+          </a>
+          <div class="pipeline-step-row">
+            <article><h4>1. Segmentation</h4><p>取得各視角中的 Candidate mask。</p></article>
+            <article><h4>2. 3D Projection & Fusion</h4><p>結合 Depth、Camera Intrinsics、Pose，將多視角觀測投影並融合至 3D 空間。</p></article>
+            <article><h4>3. Filtering & 3D BBox</h4><p>去除離群點後，估計最終 3D Bounding Box。</p></article>
+          </div>
+        </article>
+      </section>
+
+      <section id="results" class="section research-section">
+        <div class="section-heading">
+          <p class="eyebrow">Results</p>
+          <h2>Benchmark Results</h2>
+          <p>PROVE-3D 於 ScanRefer 與 Nr3D validation samples 上評估，並比較 Full-scene 與 Early-stop 兩種搜尋策略。</p>
+        </div>
+        <div class="result-highlight-grid">
+          <article class="result-card"><p>ScanRefer</p><strong>54.8%</strong><span>Overall Acc@0.25</span></article>
+          <article class="result-card"><p>ScanRefer</p><strong>38.8%</strong><span>Overall Acc@0.5</span></article>
+          <article class="result-card"><p>Nr3D</p><strong>55.6%</strong><span>Overall Accuracy</span></article>
+          <article class="result-card"><p>Nr3D</p><strong>60.6%</strong><span>View-Dependent</span></article>
+        </div>
+        <div class="result-layout">
+          <a class="research-figure image-only" href="#lightbox-scanrefer" aria-label="放大 ScanRefer 結果表">
+            <img src="images/PROV3D/SCANFER_RESULT.png" alt="ScanRefer 三維視覺定位結果表">
+          </a>
+          <div><h3>ScanRefer</h3><p>在相同 2D image-based setting 下，Full-scene 相較 VLM-Grounder：+3.2 pp @0.25、+6.0 pp @0.5。</p></div>
+        </div>
+        <div class="result-layout reverse-layout">
+          <div><h3>Nr3D</h3><p>PROVE-3D 在 Nr3D 的 Full-scene Overall 為 55.6%，並在 Easy、Hard、View-Dependent 等項目取得很強的結果，其中 View-Dependent 相較 SeqVLM 高 9.6 個百分點。</p></div>
+          <a class="research-figure image-only" href="#lightbox-nr3d" aria-label="放大 Nr3D 結果表">
+            <img src="images/PROV3D/NR3D_RESULT.png" alt="Nr3D 三維視覺定位結果表">
+          </a>
+        </div>
+      </section>
+
+      <section class="section research-section two-column-research">
+        <div class="research-copy">
+          <p class="eyebrow">Early-stop</p>
+          <h2>不一定需要看完整個 Scene</h2>
+          <p>當 Candidate 已取得足夠證據並被可靠驗證後，Early-stop 可提前停止後續場景處理，在降低 Observation Demand 的同時保留大部分定位表現。</p>
+          <div class="result-highlight-grid small-result-grid">
+            <article class="result-card"><strong>62.93%</strong><span>Reader Observation Budget</span></article>
+            <article class="result-card"><strong>37.07% ↓</strong><span>Read-unit Observations</span></article>
+            <article class="result-card"><strong>95.62%</strong><span>Full-scene Acc@0.25 Retained</span></article>
+          </div>
+        </div>
+        <a class="research-figure image-only early-stop-figure" href="#lightbox-early-stop" aria-label="放大 Early-stop 圖">
+          <img src="images/PROV3D/EARLY_STOP.png" alt="Early-stop observation budget and accuracy retention">
+        </a>
+      </section>
+
+      <section class="section research-section two-column-research">
+        <a class="research-figure image-only" href="#lightbox-ablation" aria-label="放大 Ablation Study 圖">
+          <img src="images/PROV3D/ablation.png" alt="PROVE-3D ablation study results">
+        </a>
+        <div class="research-copy">
+          <p class="eyebrow">Ablation Study</p>
+          <h2>哪些設計真正有幫助？</h2>
+          <ul class="clean-list">
+            <li><strong>Cross-view Matching：</strong>對整體表現影響最大。</li>
+            <li><strong>Environmental Evidence：</strong>周圍環境能補充 Reference Object 與 Spatial Relation 資訊。</li>
+            <li><strong>Suggested Observation：</strong>根據 Missing Evidence 選擇觀測方向，優於 Fixed Forward、Fixed Yaw 與 Random。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section research-section">
+        <div class="research-output-card">
+          <p class="eyebrow">Research Output</p>
+          <h2>ICS 2026 Paper</h2>
+          <h3>PROVE-3D: Progressive Observation and Verification with Evidence for Zero-Shot 3D Visual Grounding</h3>
+          <p>Authors: Wei-Wei Lo, Min-Fang Chuang, An-Yi Lee, Chow-Sing Lin</p>
+          <p>Capstone team contribution: 統籌、資料蒐集、設計規劃、2D-to-3D 映射與系統優化調整。</p>
+          <div class="hero-actions">
+            <a class="button primary" href="https://drive.google.com/file/d/1ngfcwk6IAwryxdVHKvfLvtcqUB0fge4p/view?usp=drive_link" target="_blank" rel="noreferrer">Paper</a>
+            <a class="button secondary" href="https://github.com/Min-FangChuang/PROVE-3D" target="_blank" rel="noreferrer">GitHub</a>
+            <a class="button secondary" href="https://drive.google.com/file/d/12PVFTL0T2lt_DgyWR_xtEayBKu8zF0x8/view" target="_blank" rel="noreferrer">中文專題報告</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="lightbox-overview" class="lightbox" aria-label="PROVE-3D overview 放大圖">
+      <a class="lightbox-close" href="#overview">×</a>
+      <img src="images/prove3d-pipeline.png" alt="PROVE-3D overview pipeline enlarged">
+    </div>
+    <div id="lightbox-pipeline" class="lightbox" aria-label="PROVE-3D pipeline 放大圖">
+      <a class="lightbox-close" href="#method">×</a>
+      <img src="images/prove3d-pipeline.png" alt="PROVE-3D full pipeline enlarged">
+    </div>
+    <div id="lightbox-query" class="lightbox" aria-label="Query 解析圖放大">
+      <a class="lightbox-close" href="#overview">×</a>
+      <img src="images/PROV3D/QUERY.png" alt="Query analysis enlarged">
+    </div>
+    <div id="lightbox-query-scene" class="lightbox" aria-label="Query 場景圖放大">
+      <a class="lightbox-close" href="#overview">×</a>
+      <img src="images/PROV3D/Q_PIC.png" alt="Query scene evidence enlarged">
+    </div>
+    <div id="lightbox-conventional" class="lightbox" aria-label="Conventional vs PROVE-3D 比較圖放大">
+      <a class="lightbox-close" href="#method">×</a>
+      <img src="images/PROV3D/CONVENTIONAL_VS_OURS.png" alt="Conventional versus PROVE-3D enlarged">
+    </div>
+    <div id="lightbox-pipeline-a" class="lightbox" aria-label="Read Unit Create Candidate 放大圖">
+      <a class="lightbox-close" href="#method">×</a>
+      <img src="images/PROV3D/Read Unit Create Candidate.png" alt="Read Unit Create Candidate enlarged">
+    </div>
+    <div id="lightbox-pipeline-b" class="lightbox" aria-label="Candidate Refinement 放大圖">
+      <a class="lightbox-close" href="#method">×</a>
+      <img src="images/PROV3D/Candidate Refinement .png" alt="Candidate Refinement enlarged">
+    </div>
+    <div id="lightbox-pipeline-c" class="lightbox" aria-label="2D-to-3D Mapping 放大圖">
+      <a class="lightbox-close" href="#method">×</a>
+      <img src="images/PROV3D/2D-to-3D Mapping.png" alt="2D-to-3D Mapping enlarged">
+    </div>
+    <div id="lightbox-scanrefer" class="lightbox" aria-label="ScanRefer 結果表放大">
+      <a class="lightbox-close" href="#results">×</a>
+      <img src="images/PROV3D/SCANFER_RESULT.png" alt="ScanRefer results enlarged">
+    </div>
+    <div id="lightbox-nr3d" class="lightbox" aria-label="Nr3D 結果表放大">
+      <a class="lightbox-close" href="#results">×</a>
+      <img src="images/PROV3D/NR3D_RESULT.png" alt="Nr3D results enlarged">
+    </div>
+    <div id="lightbox-early-stop" class="lightbox" aria-label="Early-stop 圖放大">
+      <a class="lightbox-close" href="#results">×</a>
+      <img src="images/PROV3D/EARLY_STOP.png" alt="Early-stop enlarged">
+    </div>
+    <div id="lightbox-ablation" class="lightbox" aria-label="Ablation Study 圖放大">
+      <a class="lightbox-close" href="#results">×</a>
+      <img src="images/PROV3D/ablation.png" alt="Ablation study enlarged">
+    </div>
+
+    <footer class="footer"><p>© 2026 羅暐媁. Built with GitHub Pages.</p></footer>
+  </body>
+</html>
