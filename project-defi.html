@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="MiniBank DeFi Lending Protocol 專題詳細頁：抵押借貸、流動性池、清算、Reward 與 DAO Governance。">
+    <meta name="description" content="MiniBank DeFi Lending Protocol 專題詳細頁：Solidity、Hardhat、ethers.js、抵押借貸、LP 流動性池、清算、BKT Reward 與 DAO Governance。">
     <title>MiniBank｜DeFi Lending Protocol | 羅暐媁</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,8 +25,11 @@
 
     <nav class="research-subnav" aria-label="MiniBank 頁面導覽">
       <a href="#overview">Overview</a>
+      <a href="#stack">Stack</a>
       <a href="#system">System</a>
+      <a href="#contracts">Contracts</a>
       <a href="#concepts">LTV / HF</a>
+      <a href="#tests">Tests</a>
       <a href="#demo">Demo</a>
     </nav>
 
@@ -37,10 +40,12 @@
           <p class="eyebrow">Solidity / DeFi / Governance</p>
           <h1>MiniBank｜DeFi Lending Protocol</h1>
           <h2>區塊鏈期末專題｜DeFi MiniBank DApp</h2>
-          <p class="hero-text">以 Smart Contract 實作去中心化借貸協議，整合抵押借款、LP 流動性池、利息、清算、Reward 與 DAO Governance，模擬 DeFi Lending Protocol 的核心資產流與風險控制機制。</p>
+          <p class="hero-text">以 Solidity 與 Hardhat 實作一套可在本機鏈上完整操作的去中心化銀行 DApp。系統涵蓋 LP 供應 MiniDAI、借款人抵押 ETH 借出 MiniDAI、利息與協議收益分配、健康因子清算、BKT 獎勵，以及 Governor + Timelock 的 DAO 治理流程。</p>
           <div class="tag-list research-tags">
             <span>Solidity</span>
             <span>Hardhat</span>
+            <span>OpenZeppelin</span>
+            <span>ethers.js v6</span>
             <span>DeFi</span>
             <span>Lending Protocol</span>
             <span>Smart Contract</span>
@@ -64,7 +69,21 @@
         <div class="section-heading">
           <p class="eyebrow">Project Motivation</p>
           <h2>專題動機與目標</h2>
-          <p>在區塊鏈課程中學習 DeFi 的借貸與流動性機制後，希望進一步實作一套可執行的 Smart Contract 系統，理解抵押、借貸、利息、清算、流動性提供與治理之間如何互相影響。</p>
+          <p>在區塊鏈課程中學習 DeFi 借貸與治理機制後，我希望不只停留在概念理解，而是實作一個能實際部署、透過 MetaMask 操作、並以測試覆蓋主要情境的鏈上系統。MiniBank 將借貸協議拆成資產、份額、Oracle、核心 Bank、治理代幣、Governor 與 Timelock 等模組，讓每個角色的資金流與權限邊界都能被清楚驗證。</p>
+        </div>
+      </section>
+
+      <section id="stack" class="section defi-section">
+        <div class="section-heading">
+          <p class="eyebrow">Tech Stack</p>
+          <h2>使用技術與開發環境</h2>
+          <p>此專案不是單一合約練習，而是包含合約、部署腳本、前端 DApp、ABI 匯出與測試套件的完整 Hardhat 專題。</p>
+        </div>
+        <div class="defi-tech-grid">
+          <article><span>Smart Contract</span><h3>Solidity 0.8.20</h3><p>撰寫 BankV3、MiniDAI、aMDAI、PriceOracle、BankToken、BankGovernor 與 BankTimelock。</p></article>
+          <article><span>Framework</span><h3>Hardhat</h3><p>負責 compile、local node、deployment script 與 Mocha / Chai 測試流程。</p></article>
+          <article><span>Library</span><h3>OpenZeppelin</h3><p>使用 ERC20、ERC20Votes、Governor、TimelockController 與 ReentrancyGuard。</p></article>
+          <article><span>Frontend</span><h3>HTML / JavaScript / ethers.js v6</h3><p>純靜態前端連接 MetaMask signer，直接呼叫鏈上合約，不依賴後端伺服器。</p></article>
         </div>
       </section>
 
@@ -92,7 +111,7 @@
           <article class="actor-card liquidator-card">
             <span>Liquidator</span>
             <h3>Risky Debt Handler</h3>
-            <p>Health Factor &lt; 1 時 Repay Risky Debt，取得 ETH Collateral + Liquidation Bonus。</p>
+            <p>Health Factor &lt; 0.9 時 Repay Risky Debt，取得 ETH Collateral + Liquidation Bonus。</p>
           </article>
           <article class="actor-card oracle-card">
             <span>Price Oracle</span>
@@ -103,6 +122,52 @@
             <span>DAO / BKT Holder</span>
             <h3>Governance</h3>
             <p>Delegate → Propose → Vote → Timelock → 更新協議參數。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="contracts" class="section defi-section">
+        <div class="section-heading">
+          <p class="eyebrow">Smart Contract Modules</p>
+          <h2>合約模組設計</h2>
+          <p>系統核心是 <code>BankV3</code>，其餘合約分別負責穩定幣、LP share、價格來源、治理票權與延遲執行，避免把所有權限集中在單一使用者。</p>
+        </div>
+        <div class="contract-module-grid">
+          <article><h3>BankV3.sol</h3><p>借貸核心合約，管理 ETH collateral、MiniDAI debt、LP pool、interest、liquidation、reward accounting 與 DAO 可調參數。</p></article>
+          <article><h3>MiniDAI.sol</h3><p>協議內 ERC20 穩定幣，作為 LP supply、borrow、repay 與 liquidation 使用的資產。</p></article>
+          <article><h3>aMDAI.sol</h3><p>LP share token。LP supply 後鑄造 aMDAI，redeem 時燒毀並依 pool share 取回 MiniDAI。</p></article>
+          <article><h3>PriceOracle.sol</h3><p>測試用 ETH/USD Oracle，可在 demo 中模擬 ETH 價格下跌，觸發健康因子變化與清算。</p></article>
+          <article><h3>BankToken.sol</h3><p>BKT，使用 ERC20Votes，兼具 reward token 與 DAO governance voting power。</p></article>
+          <article><h3>BankGovernor / BankTimelock</h3><p>以 OpenZeppelin Governor + TimelockController 實作提案、投票、queue、delay 與 execute。</p></article>
+        </div>
+      </section>
+
+      <section class="section defi-section">
+        <div class="section-heading">
+          <p class="eyebrow">Execution Pipeline</p>
+          <h2>部署與前端互動流程</h2>
+        </div>
+        <div class="defi-pipeline-grid">
+          <article>
+            <h3>Deploy Pipeline</h3>
+            <ol>
+              <li>啟動 Hardhat local node。</li>
+              <li>部署 PriceOracle、MiniDAI、BankToken、aMDAI 與 BankV3。</li>
+              <li>設定 MiniDAI minter 與 aMDAI bank 權限。</li>
+              <li>部署 BankTimelock 與 BankGovernor。</li>
+              <li>將 BankV3 governance 移交給 Timelock。</li>
+              <li>輸出 ABI 與 contract-address.json 給前端使用。</li>
+            </ol>
+          </article>
+          <article>
+            <h3>DApp Interaction Pipeline</h3>
+            <ol>
+              <li>開啟 frontend/index.html。</li>
+              <li>連接 MetaMask 與 local Hardhat network。</li>
+              <li>前端讀取 ABI 與部署地址。</li>
+              <li>透過 ethers.js 建立 Contract instance。</li>
+              <li>使用 signer 發送 supply、borrow、repay、liquidate、claimReward 與 DAO transaction。</li>
+            </ol>
           </article>
         </div>
       </section>
@@ -152,9 +217,23 @@
             <p class="eyebrow">Health Factor</p>
             <h3>清算風險指標</h3>
             <p>衡量目前抵押品是否足以支撐債務。</p>
-            <div class="hf-status safe">HF ≥ 1 → Safe</div>
-            <div class="hf-status danger">HF &lt; 1 → Liquidatable</div>
+            <div class="hf-status safe">HF ≥ 0.9 → Safe</div>
+            <div class="hf-status danger">HF &lt; 0.9 → Liquidatable</div>
           </article>
+        </div>
+        <div class="defi-parameter-table">
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>設定 / 作用</th><th>設計目的</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>LTV</td><td>預設 80%</td><td>限制借款人最多可依抵押品價值借出的 MiniDAI 數量。</td></tr>
+              <tr><td>Health Factor</td><td>Collateral Value / Debt</td><td>衡量帳戶是否接近清算風險。</td></tr>
+              <tr><td>Liquidation Threshold</td><td>預設 0.9</td><td>讓系統在抵押不足時能由第三方處理高風險債務。</td></tr>
+              <tr><td>Reserve Factor</td><td>預設 10%</td><td>將部分利息或清算收入保留為 protocol reserve。</td></tr>
+              <tr><td>Daily Cap</td><td>BKT 每日發放上限</td><td>避免 reward 無限制增發，控制 LP 與 borrower 激勵。</td></tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -172,9 +251,14 @@
           <span>LP 收益 / Protocol Reserve</span>
         </div>
         <div class="liquidation-flow">
-          <strong>Health Factor &lt; 1</strong>
+          <strong>Health Factor &lt; 0.9</strong>
           <span>Liquidator Repay Debt</span>
           <span>Receive ETH Collateral + Bonus</span>
+        </div>
+        <div class="defi-flow-detail-grid">
+          <article><h3>LP Supply / Redeem</h3><p>LP approve MiniDAI 後呼叫 <code>supply(amount)</code>，BankV3 將資金加入 liquidityPool 並 mint aMDAI。贖回時依 aMDAI share 計算可取回的 MiniDAI。</p></article>
+          <article><h3>Borrow / Repay</h3><p>借款人抵押 ETH 後，BankV3 透過 Oracle 計算 collateral value 與 max borrow。還款時會拆分本金、LP 收益與 protocol reserve。</p></article>
+          <article><h3>Liquidation</h3><p>當 ETH 價格下跌或債務增加導致 Health Factor 低於門檻，清算人可代償部分 MiniDAI，取得 ETH collateral 與 liquidation bonus。</p></article>
         </div>
       </section>
 
@@ -209,6 +293,26 @@
           <span>Interest Rate</span>
           <span>Reserve Factor</span>
           <span>Reward Parameters</span>
+          <span>Proposal Threshold</span>
+          <span>Quorum</span>
+          <span>Inject Reserve to LP</span>
+        </div>
+        <p class="defi-highlight-note">部署完成後，BankV3 的治理權限會轉移到 Timelock，因此調整利率、每日 BKT 發放上限、reserve factor、LP / borrower reward ratio、proposal threshold 與 quorum 等參數，都必須經過 DAO 提案、投票、排程與延遲執行。</p>
+      </section>
+
+      <section id="tests" class="section defi-section">
+        <div class="section-heading">
+          <p class="eyebrow">Verification</p>
+          <h2>測試涵蓋範圍</h2>
+          <p>專案包含 Hardhat 測試，README 紀錄目前測試結果為 21 passing，涵蓋主要協議流程與 reward 邊界情境。</p>
+        </div>
+        <div class="test-coverage-grid">
+          <article><h3>BankV3 End-to-End</h3><p>抵押、借款、利息累積、清算、還款與提款限制。</p></article>
+          <article><h3>LP Share Tracking</h3><p>多個 LP supply / redeem 後，aMDAI share 與 liquidity pool 份額計算。</p></article>
+          <article><h3>Repayment Split</h3><p>還款拆成本金、LP yield 與 protocol token reserve。</p></article>
+          <article><h3>Liquidation</h3><p>Health factor 觸發清算、清算額上限、抵押品轉移與 protocol share。</p></article>
+          <article><h3>Reward Accounting</h3><p>LP 與 borrower 的 BKT 累積、claim 與 daily cap 限制。</p></article>
+          <article><h3>DAO Parameter Change</h3><p>透過 Governor / Timelock 調整協議參數並驗證結果。</p></article>
         </div>
       </section>
 
@@ -240,6 +344,9 @@
           <article><h3>Smart Contract State Management</h3><p>理解借貸、抵押、利息與清算之間的狀態變化與一致性。</p></article>
           <article><h3>DeFi Risk Control</h3><p>實作 LTV、Health Factor 與 Liquidation，理解抵押型借貸的風險控制方式。</p></article>
           <article><h3>Protocol Integration</h3><p>將 Liquidity Pool、Reward、Liquidation 與 DAO Governance 整合成完整協議流程。</p></article>
+          <article><h3>DAO Permission Design</h3><p>理解 Timelock 如何作為治理執行者，將參數調整從 owner 操作轉為鏈上投票流程。</p></article>
+          <article><h3>DApp Integration</h3><p>從 ABI、地址檔、MetaMask signer 到 ethers.js transaction，完成前端與合約互動。</p></article>
+          <article><h3>Testing Mindset</h3><p>用單元測試與情境測試驗證本金、利息、清算、reward cap 與 LP share 等容易出錯的帳務邏輯。</p></article>
         </div>
       </section>
 

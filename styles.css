@@ -2670,6 +2670,16 @@ a.project-card:hover {
   border-top: 1px solid var(--line);
 }
 
+.defi-section code {
+  padding: 2px 6px;
+  border-radius: 8px;
+  background: rgba(118, 88, 181, 0.12);
+  color: #4e337d;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.9em;
+  font-weight: 800;
+}
+
 .defi-hero-visual {
   position: relative;
   min-height: 460px;
@@ -2843,6 +2853,75 @@ a.project-card:hover {
   gap: 16px;
 }
 
+.defi-tech-grid,
+.contract-module-grid,
+.defi-pipeline-grid,
+.defi-flow-detail-grid,
+.test-coverage-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.contract-module-grid,
+.test-coverage-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.defi-tech-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.defi-pipeline-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.defi-flow-detail-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.defi-tech-grid article,
+.contract-module-grid article,
+.defi-pipeline-grid article,
+.defi-flow-detail-grid article,
+.test-coverage-grid article {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--surface-soft);
+  box-shadow: 0 16px 48px rgba(69, 45, 25, 0.1);
+}
+
+.defi-tech-grid article > span {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 12px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(118, 88, 181, 0.15);
+  color: #5b3b91;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.defi-tech-grid p,
+.contract-module-grid p,
+.defi-pipeline-grid li,
+.defi-flow-detail-grid p,
+.test-coverage-grid p {
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.65;
+}
+
+.defi-pipeline-grid ol {
+  margin: 16px 0 0;
+  padding-left: 20px;
+}
+
+.defi-pipeline-grid li + li {
+  margin-top: 8px;
+}
+
 .asset-card-grid,
 .revenue-card-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2873,6 +2952,46 @@ a.project-card:hover {
 
 .concept-card-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.defi-parameter-table {
+  overflow-x: auto;
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: rgba(255, 250, 240, 0.78);
+  box-shadow: 0 16px 48px rgba(69, 45, 25, 0.08);
+}
+
+.defi-parameter-table table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.defi-parameter-table th,
+.defi-parameter-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.defi-parameter-table th {
+  background: rgba(118, 88, 181, 0.13);
+  color: var(--text);
+  font-size: 0.88rem;
+  font-weight: 900;
+}
+
+.defi-parameter-table td {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.defi-parameter-table tr:last-child td {
+  border-bottom: 0;
 }
 
 .formula-box,
@@ -2963,6 +3082,10 @@ a.project-card:hover {
   border: 1px solid rgba(196, 65, 65, 0.2);
   border-radius: 24px;
   background: rgba(196, 65, 65, 0.06);
+}
+
+.defi-flow-detail-grid {
+  margin-top: 16px;
 }
 
 .liquidation-flow strong {
@@ -4599,6 +4722,11 @@ a.project-card:hover {
   .learned-grid,
   .circuit-diagram-grid,
   .defi-architecture,
+  .defi-tech-grid,
+  .contract-module-grid,
+  .defi-pipeline-grid,
+  .defi-flow-detail-grid,
+  .test-coverage-grid,
   .asset-card-grid,
   .participant-grid,
   .concept-card-grid,
