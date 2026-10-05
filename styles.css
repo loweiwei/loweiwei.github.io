@@ -2711,48 +2711,60 @@ a.project-card:hover {
   padding-top: 46px;
 }
 
-.defi-outline-grid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.defi-outline-grid a {
-  display: grid;
-  gap: 8px;
-  min-height: 150px;
-  padding: 18px;
+.defi-toc-card {
+  max-width: 980px;
+  padding: 22px 26px;
   border: 1px solid var(--line);
-  border-radius: 22px;
-  background: rgba(255, 250, 240, 0.78);
-  box-shadow: 0 14px 36px rgba(69, 45, 25, 0.08);
+  border-radius: 26px;
+  background: rgba(255, 250, 240, 0.82);
+  box-shadow: 0 16px 44px rgba(69, 45, 25, 0.08);
 }
 
-.defi-outline-grid a:hover {
-  transform: translateY(-2px);
-}
-
-.defi-outline-grid span {
+.defi-toc-card ol {
   display: grid;
-  width: 36px;
-  height: 36px;
-  place-items: center;
-  border-radius: 999px;
-  background: var(--surface-strong);
-  color: #fffaf0;
-  font-size: 0.8rem;
-  font-weight: 900;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: toc;
 }
 
-.defi-outline-grid strong {
+.defi-toc-card li {
+  border-bottom: 1px solid var(--line);
+}
+
+.defi-toc-card li:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.defi-toc-card a {
+  display: grid;
+  grid-template-columns: 42px minmax(120px, 0.42fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: baseline;
+  padding: 14px 0;
+}
+
+.defi-toc-card a:hover {
+  transform: translateX(4px);
+}
+
+.defi-toc-card span {
+  color: var(--accent-deep);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.defi-toc-card strong {
   color: var(--text);
   font-size: 0.98rem;
-  line-height: 1.25;
 }
 
-.defi-outline-grid small {
+.defi-toc-card small {
   color: var(--muted);
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   line-height: 1.45;
 }
 
@@ -4888,7 +4900,6 @@ a.project-card:hover {
   .learned-grid,
   .circuit-diagram-grid,
   .defi-architecture,
-  .defi-outline-grid,
   .defi-story-grid,
   .defi-tech-grid,
   .contract-module-grid,
@@ -4958,6 +4969,26 @@ a.project-card:hover {
   .research-subnav {
     justify-content: flex-start;
     overflow-x: auto;
+  }
+
+  .defi-toc-card ol {
+    grid-template-columns: 1fr;
+  }
+
+  .defi-toc-card li:nth-last-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .defi-toc-card li:last-child {
+    border-bottom: 0;
+  }
+
+  .defi-toc-card a {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  .defi-toc-card small {
+    grid-column: 2;
   }
 
   .early-stop-figure {
