@@ -25,6 +25,7 @@
 
     <nav class="research-subnav" aria-label="MiniBank 頁面導覽">
       <a href="#overview">Overview</a>
+      <a href="#story">Story</a>
       <a href="#stack">Stack</a>
       <a href="#system">System</a>
       <a href="#contracts">Contracts</a>
@@ -74,18 +75,19 @@
         </div>
         <nav class="defi-toc-card" aria-label="MiniBank 頁面目錄">
           <ol>
-            <li><a href="#stack"><span>01</span><strong>Tech Stack</strong><small>合約、Hardhat、前端與部署流程</small></a></li>
-            <li><a href="#system"><span>02</span><strong>System Architecture</strong><small>BankV3、資產、角色與風險控制</small></a></li>
-            <li><a href="#contracts"><span>03</span><strong>Contracts</strong><small>核心合約與模組責任分工</small></a></li>
-            <li><a href="#flow"><span>04</span><strong>Protocol Flow</strong><small>供應、借款、還款、清算與獎勵</small></a></li>
-            <li><a href="#governance"><span>05</span><strong>DAO Governance</strong><small>提案、投票、Timelock 與參數調整</small></a></li>
-            <li><a href="#tests"><span>06</span><strong>Verification</strong><small>測試涵蓋範圍與實作驗證</small></a></li>
-            <li><a href="#demo"><span>07</span><strong>Frontend Demo</strong><small>DApp 操作介面與展示影片</small></a></li>
+            <li><a href="#story"><span>01</span><strong>Project Story</strong><small>專題定位：把 DeFi Lending 從概念做成可操作協議</small></a></li>
+            <li><a href="#stack"><span>02</span><strong>Tech Stack & Deployment</strong><small>先建立一個能被部署與操作的鏈上環境</small></a></li>
+            <li><a href="#system"><span>03</span><strong>System Architecture</strong><small>整個系統圍繞 BankV3：資產、角色、風險與治理都回到同一個核心帳本</small></a></li>
+            <li><a href="#contracts"><span>04</span><strong>Smart Contract Design</strong><small>合約分工：BankV3 管帳，其他合約各自處理資產、價格與治理</small></a></li>
+            <li><a href="#flow"><span>05</span><strong>Protocol Flow</strong><small>從一筆資金的生命週期理解借貸、還款、清算與獎勵</small></a></li>
+            <li><a href="#governance"><span>06</span><strong>DAO Governance</strong><small>治理流程：把協議參數調整交給 BKT 持有人與 Timelock</small></a></li>
+            <li><a href="#tests"><span>07</span><strong>Verification</strong><small>測試重點：驗證資金帳本、清算邊界與 reward accounting</small></a></li>
+            <li><a href="#demo"><span>08</span><strong>Frontend & Demo</strong><small>前端把合約流程整理成可操作的 DApp</small></a></li>
           </ol>
         </nav>
       </section>
 
-      <section class="section defi-section">
+      <section id="story" class="section defi-section">
         <div class="section-heading wide-heading">
           <p class="eyebrow">Project Story</p>
           <h2>專題定位：把 DeFi Lending 從概念做成可操作協議</h2>

@@ -2740,7 +2740,7 @@ a.project-card:hover {
 
 .defi-toc-card a {
   display: grid;
-  grid-template-columns: 42px minmax(120px, 0.42fr) minmax(0, 1fr);
+  grid-template-columns: 42px minmax(190px, 0.48fr) minmax(0, 1fr);
   gap: 12px;
   align-items: baseline;
   padding: 14px 0;
