@@ -2707,6 +2707,55 @@ a.project-card:hover {
   line-height: 1.7;
 }
 
+.defi-outline-section {
+  padding-top: 46px;
+}
+
+.defi-outline-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.defi-outline-grid a {
+  display: grid;
+  gap: 8px;
+  min-height: 150px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: rgba(255, 250, 240, 0.78);
+  box-shadow: 0 14px 36px rgba(69, 45, 25, 0.08);
+}
+
+.defi-outline-grid a:hover {
+  transform: translateY(-2px);
+}
+
+.defi-outline-grid span {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--surface-strong);
+  color: #fffaf0;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.defi-outline-grid strong {
+  color: var(--text);
+  font-size: 0.98rem;
+  line-height: 1.25;
+}
+
+.defi-outline-grid small {
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
 .defi-hero-visual {
   position: relative;
   min-height: 460px;
@@ -4839,6 +4888,7 @@ a.project-card:hover {
   .learned-grid,
   .circuit-diagram-grid,
   .defi-architecture,
+  .defi-outline-grid,
   .defi-story-grid,
   .defi-tech-grid,
   .contract-module-grid,
