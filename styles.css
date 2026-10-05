@@ -1924,6 +1924,96 @@ a.project-card:hover {
   border-top: 1px solid var(--line);
 }
 
+.ros-section code {
+  padding: 2px 6px;
+  border-radius: 8px;
+  background: rgba(53, 121, 98, 0.12);
+  color: #2c6854;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.9em;
+  font-weight: 800;
+}
+
+.ros-wide-heading {
+  max-width: 980px;
+}
+
+.ros-wide-heading p {
+  line-height: 1.78;
+}
+
+.ros-wide-heading p + p {
+  margin-top: 12px;
+}
+
+.ros-outline-section {
+  padding-top: 46px;
+}
+
+.ros-outline-section h2 {
+  max-width: 900px;
+  font-size: clamp(1.9rem, 4vw, 3.2rem);
+}
+
+.ros-roadmap {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 18px;
+  max-width: 980px;
+  padding: 20px 24px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: rgba(255, 250, 240, 0.78);
+  box-shadow: 0 16px 44px rgba(69, 45, 25, 0.08);
+}
+
+.ros-roadmap a {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(69, 45, 25, 0.12);
+}
+
+.ros-roadmap a:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.ros-roadmap a:hover {
+  transform: translateX(4px);
+}
+
+.ros-roadmap span {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(53, 121, 98, 0.22);
+  border-radius: 999px;
+  background: rgba(53, 121, 98, 0.1);
+  color: #2c6854;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.ros-roadmap div {
+  display: grid;
+  gap: 4px;
+}
+
+.ros-roadmap strong {
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.ros-roadmap small {
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
 .ros-media-slot {
   position: relative;
   display: grid;
@@ -2022,6 +2112,11 @@ a.project-card:hover {
 }
 
 .ros-task-grid,
+.ros-story-grid,
+.ros-architecture-map,
+.ros-module-grid,
+.ros-stage-grid,
+.ros-state-grid,
 .tech-card-grid,
 .highlight-card-grid,
 .future-card-grid {
@@ -2033,7 +2128,23 @@ a.project-card:hover {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.ros-story-grid,
+.ros-module-grid,
+.ros-stage-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ros-architecture-map,
+.ros-state-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .ros-task-card,
+.ros-story-grid article,
+.ros-architecture-map article,
+.ros-module-grid article,
+.ros-stage-grid article,
+.ros-state-grid article,
 .decision-lanes article,
 .ros-step-stack article,
 .tech-card-grid article,
@@ -2050,11 +2161,47 @@ a.project-card:hover {
   border-radius: 28px;
 }
 
+.ros-story-grid article,
+.ros-architecture-map article,
+.ros-module-grid article,
+.ros-stage-grid article,
+.ros-state-grid article {
+  padding: 24px;
+  border-radius: 26px;
+}
+
+.ros-story-grid article {
+  background: linear-gradient(135deg, rgba(255, 250, 240, 0.9), rgba(241, 248, 244, 0.78));
+}
+
+.ros-architecture-map article > span,
+.ros-stage-grid article > span {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 12px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: var(--surface-strong);
+  color: #fffaf0;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.ros-stage-grid article > span {
+  min-width: 38px;
+  justify-content: center;
+}
+
 .ros-task-body {
   padding: 22px;
 }
 
 .ros-task-body p,
+.ros-story-grid p,
+.ros-architecture-map p,
+.ros-module-grid p,
+.ros-stage-grid p,
+.ros-state-grid p,
 .decision-lanes p,
 .ros-step-stack p,
 .highlight-card-grid p,
@@ -2096,14 +2243,16 @@ a.project-card:hover {
 }
 
 .ros-vertical-flow,
-.ros-execution-flow {
+.ros-execution-flow,
+.ros-pipeline-chain {
   display: grid;
   gap: 10px;
   margin-top: 18px;
 }
 
 .ros-vertical-flow span,
-.ros-execution-flow span {
+.ros-execution-flow span,
+.ros-pipeline-chain span {
   position: relative;
   padding: 12px 14px;
   border-radius: 16px;
@@ -2198,6 +2347,31 @@ a.project-card:hover {
 .ros-execution-flow {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   margin-top: 18px;
+}
+
+.ros-pipeline-chain {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.ros-pipeline-chain span:not(:last-child)::after {
+  position: absolute;
+  top: 50%;
+  right: -18px;
+  z-index: 2;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--surface-strong);
+  color: #fffaf0;
+  content: "→";
+  font-size: 0.9rem;
+  line-height: 24px;
+  transform: translateY(-50%);
+}
+
+.ros-flow-map {
+  max-width: 760px;
+  margin-top: 22px;
 }
 
 .ros-loop-note {
@@ -4893,7 +5067,14 @@ a.project-card:hover {
 
   .wide-flow,
   .horizontal-pipeline,
+  .ros-roadmap,
   .ros-task-grid,
+  .ros-story-grid,
+  .ros-architecture-map,
+  .ros-module-grid,
+  .ros-stage-grid,
+  .ros-state-grid,
+  .ros-pipeline-chain,
   .ros-mapping-section,
   .ros-media-pair,
   .ros-pipeline-layout,
@@ -4979,6 +5160,14 @@ a.project-card:hover {
   .research-subnav {
     justify-content: flex-start;
     overflow-x: auto;
+  }
+
+  .ros-roadmap a:nth-last-child(-n + 2) {
+    border-bottom: 1px solid rgba(69, 45, 25, 0.12);
+  }
+
+  .ros-roadmap a:last-child {
+    border-bottom: 0;
   }
 
   .defi-roadmap {
@@ -5068,7 +5257,8 @@ a.project-card:hover {
 
   .mini-chain span:not(:last-child)::after,
   .lending-flow span:not(:last-child)::after,
-  .governance-flow span:not(:last-child)::after {
+  .governance-flow span:not(:last-child)::after,
+  .ros-pipeline-chain span:not(:last-child)::after {
     top: auto;
     right: 50%;
     bottom: -18px;
