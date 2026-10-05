@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Hermes AI Agent 專題詳細頁：可驗證 Agent Skills、deterministic wrapper、Text2SQL、Code Generation、Bug Analysis 與 Mutation Testing。">
+    <meta name="description" content="Hermes AI Agent 專題詳細頁：以 deterministic verification 包住 LLM 生成結果，實作 Text2SQL、Code Author、Bug Hunter 與 Open Test Killer。">
     <title>Hermes AI Agent｜Verifiable Agent Skills | 羅暐媁</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,21 +24,24 @@
     </header>
 
     <nav class="research-subnav" aria-label="Hermes AI Agent 頁面導覽">
-      <a href="#motivation">Motivation</a>
-      <a href="#pipeline">Pipeline</a>
+      <a href="#overview">Overview</a>
+      <a href="#story">Story</a>
+      <a href="#architecture">Architecture</a>
       <a href="#skills">Skills</a>
+      <a href="#verification">Verification</a>
       <a href="#results">Results</a>
+      <a href="#limits">Limits</a>
       <a href="#github">GitHub</a>
     </nav>
 
     <main class="hermes-page">
-      <section id="motivation" class="section hermes-hero">
+      <section id="overview" class="section hermes-hero">
         <div>
           <a class="back-link" href="projects.html">← 回作品集</a>
           <p class="eyebrow">LLM Agent / Verification / Software Engineering</p>
           <h1>Hermes AI Agent｜Verifiable Agent Skills</h1>
           <h2>跨校（成大）生成式 AI 與應用期末專題</h2>
-          <p class="hero-text">設計可驗證的 AI Agent Skills，讓 LLM 負責理解任務與產生候選答案，再透過 deterministic wrapper 進行格式、程式行為與結果驗證，降低「答案看起來合理但實際錯誤」的風險。</p>
+          <p class="hero-text">這個專題的核心問題是：LLM 可以產生 SQL、Python code 或 bug report，但「看起來合理」不等於「格式正確、可以執行、真的符合任務」。因此我把 LLM 放在語意理解與候選答案生成的位置，再用 deterministic wrapper 負責格式檢查、靜態分析、程式執行、mutation testing、fallback 與結果檔輸出。</p>
           <div class="tag-list research-tags">
             <span>LLM Agent</span>
             <span>Verifiable AI</span>
@@ -56,152 +59,197 @@
         </div>
       </section>
 
-      <section class="section hermes-section two-column-research">
-        <div class="research-copy">
-          <p class="eyebrow">Why Verification?</p>
-          <h2>為什麼不能直接相信 LLM？</h2>
-          <p>LLM 可以產生 SQL、Python 程式與 Bug Report，但輸出看起來合理，不代表真的符合格式、能執行，或結果正確。</p>
-          <p>本專題因此將「生成」與「驗證」分離，讓 LLM 負責提出 Candidate Answer，由 deterministic wrapper 負責真正可檢查的正確性。</p>
+      <section id="outline" class="section hermes-section hermes-outline-section">
+        <div class="section-heading wide-heading">
+          <p class="eyebrow">Page Outline</p>
+          <h2>閱讀大綱：從「為什麼要驗證」一路讀到四個 Agent Skills</h2>
+          <p>這頁會用讀者容易理解的順序介紹 Hermes：先說明 LLM 在軟體工程任務中容易出錯的地方，再說明整體架構如何把生成與驗證分開，接著逐一拆解 Text2SQL、Code Author、Bug Hunter、Open Test Killer，最後解讀課程評測、本地測試與專題限制。</p>
         </div>
-        <div class="verification-highlight">
-          <span>LLM Generation</span>
-          <span>Deterministic Verification</span>
-          <span>Validated Result</span>
+        <nav class="hermes-roadmap" aria-label="Hermes AI Agent 頁面目錄">
+          <a href="#story"><span>01</span><div><strong>Project Story</strong><small>問題背景與核心設計原則</small></div></a>
+          <a href="#architecture"><span>02</span><div><strong>System Architecture</strong><small>Hermes、LLM、wrapper、evaluator 如何分工</small></div></a>
+          <a href="#skills"><span>03</span><div><strong>Four Agent Skills</strong><small>四個任務各自的輸入、驗證與 fallback</small></div></a>
+          <a href="#verification"><span>04</span><div><strong>Verification Pipeline</strong><small>JSON contract、atomic write、worker isolation、測試矩陣</small></div></a>
+          <a href="#results"><span>05</span><div><strong>Results & Evidence</strong><small>課程評分、本地測試與 component comparison</small></div></a>
+          <a href="#limits"><span>06</span><div><strong>Limits & Claims</strong><small>哪些能宣稱、哪些不能過度解讀</small></div></a>
+        </nav>
+      </section>
+
+      <section id="story" class="section hermes-section">
+        <div class="section-heading wide-heading">
+          <p class="eyebrow">Project Story</p>
+          <h2>專題定位：不是讓 Agent 自己說自己對，而是讓程式驗證能檢查的部分</h2>
+          <p>在 Text2SQL、程式生成、除錯報告與測試選擇這類任務中，LLM 的優勢是理解自然語言、推測使用者意圖與產生候選答案；但它的弱點也很明顯：可能輸出錯誤 JSON、引用不存在的欄位、產生不能執行的 Python、把 clean code 誤判為 buggy，或用自然語言宣稱某個測試能殺死 mutant，卻沒有真的執行過。</p>
+          <p>Hermes 的設計因此採用一個簡單原則：<strong>LLM for reasoning, deterministic system for trust</strong>。模型負責提出 candidate answer，wrapper 負責把 candidate 轉成可檢查的 contract，並用 schema validation、AST checks、sample execution、dynamic probes、reference/mutant execution 等方式產生客觀證據。</p>
+        </div>
+        <div class="hermes-story-grid">
+          <article><h3>我想解決的問題</h3><p>降低 LLM 在軟體工程任務中「輸出看起來合理，但 evaluator 無法讀取或實際執行錯誤」的風險。</p></article>
+          <article><h3>我的主要貢獻</h3><p>實作四個可執行 Skill wrapper，包含 SQL 驗證、Python AST 與 sample checks、Bug report normalization / dynamic audit，以及 mutation-test kill matrix selection。</p></article>
+          <article><h3>讀者可以怎麼理解</h3><p>把 Hermes 想成一個可重跑的交付流程：模型先產生候選答案，程式再檢查能不能安全交給評分器。</p></article>
         </div>
       </section>
 
-      <section id="pipeline" class="section hermes-section">
-        <div class="section-heading">
-          <p class="eyebrow">Overall Pipeline</p>
-          <h2>生成答案後，必須進入可重跑的驗證流程</h2>
+      <section id="architecture" class="section hermes-section">
+        <div class="section-heading wide-heading">
+          <p class="eyebrow">System Architecture</p>
+          <h2>整體架構：任務進來後，正式答案必須經過 wrapper 才能輸出</h2>
+          <p>每個 Skill 都遵守同一個高階流程：課程 evaluator 或本地 <code>run_dev.py</code> 組成 payload，Hermes / LLM 根據任務產生候選答案，接著呼叫該 Skill 的 <code>scripts/run.py</code>。runner 解析 payload 與 candidate，進行靜態或動態檢查，最後把正式 JSON 寫到 <code>AIASE_RESULT_PATH</code>。正式答案不是聊天文字，也不是 stdout 裡的一段說明，而是一份可被 evaluator 穩定讀取的 JSON result file。</p>
         </div>
         <a class="hermes-figure" href="#lightbox-hermes-pipeline" aria-label="放大 Hermes Overall Pipeline 圖">
           <img src="images/HERMES/HERMES.png" alt="Hermes AI Agent overall pipeline">
           <span>Overall Pipeline</span>
         </a>
-        <a class="hermes-figure hermes-exp-figure" href="#lightbox-hermes-exp" aria-label="放大 Hermes experimental results 圖">
-          <img src="images/HERMES/HERMES_EXP.png" alt="Hermes AI Agent experimental results">
-          <span>Experimental Overview</span>
-        </a>
-        <div class="pipeline-outcomes">
-          <article class="valid-path"><strong>Valid</strong><span>Structured Result</span></article>
-          <article class="invalid-path"><strong>Invalid</strong><span>Normalize / Safe Fallback / Low Confidence → Recovery</span></article>
+        <div class="hermes-architecture-map">
+          <article><span>01</span><h3>Task Payload</h3><p>包含自然語言題目、schema、Python code、constraints、mutants 或 candidate inputs。</p></article>
+          <article><span>02</span><h3>Hermes / LLM</h3><p>理解任務需求，提出 SQL、Python function、bug report，或把 Open Track payload 原封不動傳給 runner。</p></article>
+          <article><span>03</span><h3>Deterministic Wrapper</h3><p>清理格式、驗證 contract、執行程式、建立測試矩陣，並在失敗時產生 safe fallback。</p></article>
+          <article><span>04</span><h3>Atomic JSON Result</h3><p>使用 temporary file + <code>os.replace()</code> 寫入 <code>AIASE_RESULT_PATH</code>，避免 evaluator 讀到半成品。</p></article>
+          <article><span>05</span><h3>Evaluator</h3><p>讀取正式 JSON，執行 SQL、測試 code、比對 bug report 或重跑 selected tests。</p></article>
         </div>
-      </section>
-
-      <section class="section hermes-section">
-        <div class="section-heading">
-          <p class="eyebrow">Three-layer Architecture</p>
-          <h2>三個角色怎麼分工</h2>
+        <div class="hermes-trust-chain">
+          <span>Task</span><span>LLM Candidate</span><span>Wrapper Checks</span><span>Fallback / Repair</span><span>Result JSON</span><span>Evaluator</span>
         </div>
-        <div class="architecture-role-grid">
-          <article><span>01</span><h3>Hermes</h3><strong>Agent Runtime</strong><p>負責載入 Skill、呼叫 LLM、協調工具與任務流程。</p></article>
-          <article><span>02</span><h3>LLM</h3><strong>Candidate Generation</strong><p>理解任務需求並產生候選答案。</p></article>
-          <article><span>03</span><h3>Deterministic Wrapper</h3><strong>Verification & Execution</strong><p>清理、檢查、執行、Fallback，最後輸出正式 JSON。</p></article>
-        </div>
-        <p class="hermes-highlight-note">LLM 負責「提出答案」，Wrapper 負責「證明答案可以被接受」。</p>
       </section>
 
       <section id="skills" class="section hermes-section">
-        <div class="section-heading">
-          <p class="eyebrow">Four Skill Verification Modules</p>
-          <h2>四個可驗證 Agent Skills</h2>
+        <div class="section-heading wide-heading">
+          <p class="eyebrow">Four Agent Skills</p>
+          <h2>四個 Skills 的共同精神：能用程式檢查的，就不要只相信模型描述</h2>
+          <p>這四個任務看似不同，但都遵守相同模式：LLM 產生 candidate，runner 檢查 candidate 是否符合 contract 與基本行為。如果 candidate 不可靠，runner 會把錯誤轉成可控的 fallback，而不是讓 evaluator 收到不合法輸出。</p>
         </div>
-        <div class="skill-card-grid">
-          <article class="skill-card">
+        <div class="skill-card-grid hermes-skill-detail-grid">
+          <article class="skill-card hermes-skill-module">
             <p class="skill-index">01</p>
             <h3>Text2SQL</h3>
-            <strong>先限制，再驗證</strong>
-            <div class="skill-flow"><span>Question + Schema</span><span>LLM generates SQL</span><span>SQL Cleaning</span><span>Read-only Check</span><span>Schema / EXPLAIN Validation</span><span>Valid SQL / Safe Fallback</span></div>
-            <div class="skill-responsibility"><p><strong>LLM：</strong>理解 Table、Join、Filter、Aggregation 等查詢語意。</p><p><strong>Wrapper：</strong>檢查 Read-only Policy、Schema Validation、SQLite EXPLAIN 與 Safe Fallback。</p></div>
+            <strong>自然語言問題 → SQLite SELECT query</strong>
+            <p>風險是 LLM 可能產生 fenced SQL、多 statement、DDL/DML、ambiguous column，或引用不存在的 schema 欄位。</p>
+            <div class="skill-flow"><span>Question + Schema</span><span>LLM SQL</span><span>Clean Fence</span><span>Read-only Check</span><span>SQLite EXPLAIN</span><span>Safe SQL JSON</span></div>
+            <div class="skill-responsibility"><p><strong>LLM：</strong>理解 table、join、filter、aggregation 語意。</p><p><strong>Wrapper：</strong>移除 Markdown fence、遮蔽字串與註解後檢查危險 keyword，使用 schema-aware validation 和 SQLite <code>EXPLAIN</code>，失敗時輸出 <code>SELECT NULL WHERE 0</code>。</p></div>
           </article>
-          <article class="skill-card">
+          <article class="skill-card hermes-skill-module">
             <p class="skill-index">02</p>
             <h3>Code Author</h3>
-            <strong>先生成，再執行檢查</strong>
-            <div class="skill-flow"><span>Task + Constraints + Samples</span><span>LLM generates Python Function</span><span>AST Parse</span><span>Entry / SLOC / Import Check</span><span>Sample Execution</span><span>Select Best Candidate</span></div>
-            <div class="skill-responsibility"><p><strong>LLM：</strong>產生符合 Task Description 與 Constraints 的 Python Function Candidate。</p><p><strong>Wrapper：</strong>以 AST、Entry Point、Import Policy 與 Sample Execution 驗證其可執行性。</p></div>
+            <strong>題目描述 → 可交付 Python function</strong>
+            <p>風險是候選 code 可能沒有 entry function、違反 import policy、hardcode samples、無限迴圈，或在主 process 執行時造成 evaluator 不穩。</p>
+            <div class="skill-flow"><span>Task + Samples</span><span>LLM Code</span><span>AST Parse</span><span>SLOC / Import Policy</span><span>Worker Samples</span><span>Best Candidate</span></div>
+            <div class="skill-responsibility"><p><strong>LLM：</strong>根據題目與 constraints 產生 candidate function。</p><p><strong>Wrapper：</strong>檢查 AST、entry point、dangerous calls、sample hardcoding，並在 child process 中執行 samples；候選失敗時使用 deterministic template 或低信心 stub。</p></div>
           </article>
-          <article class="skill-card">
+          <article class="skill-card hermes-skill-module">
             <p class="skill-index">03</p>
             <h3>Bug Hunter</h3>
-            <strong>LLM 判斷 + 程式行為交叉驗證</strong>
-            <div class="skill-flow"><span>Task + Python Code</span><span>LLM proposes Bug Report</span><span>Normalize / Validate Report</span><span>Deterministic Audit</span><span>Cross-Verify Findings</span><span>Final Bug Contract</span></div>
-            <div class="skill-responsibility"><p><strong>LLM：</strong>提出可能的 Bug、位置與理由。</p><p><strong>Wrapper：</strong>檢查 Line / Type / Severity，並透過 deterministic audit 與 Dynamic Probes 驗證。</p></div>
+            <strong>Python code → 可定位 bug report</strong>
+            <p>風險是 LLM 可能輸出不合法 JSON、行號錯誤、enum 不符合規格、過度猜測，或在 clean code 上亂報 bug。</p>
+            <div class="skill-flow"><span>Task + Code</span><span>LLM Report</span><span>JSON Extract</span><span>Normalize Lines</span><span>Dynamic Audit</span><span>Final Contract</span></div>
+            <div class="skill-responsibility"><p><strong>LLM：</strong>提出可能 bug、位置、嚴重度與修正方向。</p><p><strong>Wrapper：</strong>抽出 JSON、修正 line range、映射 invalid enum、過濾 placeholder/speculative report，並用 task-family probes 補強可執行證據。</p></div>
           </article>
-          <article class="skill-card">
+          <article class="skill-card hermes-skill-module">
             <p class="skill-index">04</p>
             <h3>Open Test Killer</h3>
-            <strong>有限 Test Budget 下選出最有效的測試</strong>
-            <div class="skill-flow"><span>Reference Code + Mutants + Candidate Tests</span><span>Execute & Compare</span><span>Build Kill Matrix</span><span>Select Test Set</span><span>Exact Search / Greedy Fallback</span><span>Kill Rate</span></div>
-            <div class="skill-responsibility"><p><strong>LLM / Input：</strong>提供 reference code、mutants 與 candidate tests。</p><p><strong>Wrapper：</strong>實際執行測試建立 Kill Matrix，並在有限 Test Budget 下選出最佳測試集合。</p></div>
+            <strong>Reference + Mutants + Inputs → 最有效測試集合</strong>
+            <p>這是本專題最接近 deterministic evaluator 的部分。測試能否 kill mutant 不是用模型猜，而是實際執行 reference 和 mutants 後建立 kill matrix。</p>
+            <div class="skill-flow"><span>Reference + Mutants</span><span>Candidate Inputs</span><span>Execute Programs</span><span>Build Kill Matrix</span><span>Exact / Greedy Select</span><span>Kill Rate</span></div>
+            <div class="skill-responsibility"><p><strong>LLM / Hermes：</strong>主要負責把完整 payload 傳給 runner。</p><p><strong>Wrapper：</strong>執行 reference 與 mutants，定義 exception / timeout / wrong output 為 kill，再用 exact maximum coverage 或 deterministic greedy fallback 選測試。</p></div>
           </article>
         </div>
       </section>
 
-      <section class="section hermes-section two-column-research">
-        <div class="research-copy">
-          <p class="eyebrow">Open Test Killer Example</p>
-          <h2>用 Kill Matrix 選最有效的測試</h2>
-          <p>在 Test Budget = 2 時，系統比較不同測試組合的 mutant coverage，選出能覆蓋最多錯誤版本的集合。</p>
-          <p class="hermes-highlight-note compact-note">因此在 Test Budget = 2 時，系統選擇 A + B，可覆蓋全部 3 個 Mutants，Kill Rate = 100%。</p>
+      <section id="verification" class="section hermes-section">
+        <div class="section-heading wide-heading">
+          <p class="eyebrow">Verification Pipeline</p>
+          <h2>驗證不是單一測試，而是多層防線</h2>
+          <p>Hermes 的可靠性來自多個小而明確的工程決策：結果檔 contract、候選答案清理、靜態檢查、受限 worker 執行、fallback、self-tests、regression tests 與 repository verifier。這些機制不保證模型永遠答對，但能讓失敗變得可觀測、可重跑、可歸因。</p>
         </div>
-        <div class="kill-matrix-card">
-          <table>
-            <thead><tr><th>Tests</th><th>Kill Mutants</th><th>Budget = 2</th></tr></thead>
-            <tbody>
-              <tr><td>A</td><td>M1, M3</td><td>A + B → 100%</td></tr>
-              <tr><td>B</td><td>M2</td><td>A + C → 67%</td></tr>
-              <tr><td>C</td><td>M1</td><td>B + C → 67%</td></tr>
-            </tbody>
-          </table>
+        <div class="hermes-evidence-grid">
+          <article><span>Contract</span><h3><code>AIASE_RESULT_PATH</code></h3><p>每個 Skill 都把正式結果寫入指定 JSON 檔，避免把自然語言聊天回覆誤當成答案。</p></article>
+          <article><span>Atomic Write</span><h3>Temporary File + Replace</h3><p>先寫暫存檔，再用 <code>os.replace()</code> 交換，降低 evaluator 讀到半份 JSON 的機率。</p></article>
+          <article><span>Static Checks</span><h3>SQL / AST / Policy</h3><p>Text2SQL 檢查 read-only schema；Code Author 檢查 AST、entry function、SLOC、imports 與 dangerous calls。</p></article>
+          <article><span>Dynamic Checks</span><h3>Worker Execution</h3><p>候選 code、bug probes、reference/mutant execution 都透過 child process、timeout 與 resource limits 控制。</p></article>
+          <article><span>Fallback</span><h3>Safe Failure</h3><p>當 candidate 不合法時輸出可執行但低信心的結果，而不是讓 evaluator crash 或收到危險內容。</p></article>
+          <article><span>Regression</span><h3>Self-tests + Verifier</h3><p>用 root pytest、skill self-tests、regression scripts 和 repository verifier 檢查 contract 與邊界行為。</p></article>
+        </div>
+        <div class="hermes-open-layout">
+          <div class="research-copy">
+            <p class="eyebrow">Open Test Killer Example</p>
+            <h2>Kill Matrix 如何選出最有效測試</h2>
+            <p>Open Test Killer 會先用每個 candidate input 執行 reference，得到 expected output；再用同一個 input 執行每個 mutant。若 mutant 的輸出不同、丟 exception 或 timeout，就代表這個 input 能 kill 該 mutant。最後在 <code>max_tests</code> 預算內選出覆蓋最多 mutants 的測試組合。</p>
+            <p class="hermes-highlight-note compact-note">在下方範例中，Budget = 2 時選 A + B 可 kill M1、M2、M3，因此 kill rate = 100%。這個結果來自實際執行，而不是模型自然語言推測。</p>
+          </div>
+          <div class="kill-matrix-card">
+            <table>
+              <thead><tr><th>Tests</th><th>Kill Mutants</th><th>Budget = 2</th></tr></thead>
+              <tbody>
+                <tr><td>A</td><td>M1, M3</td><td>A + B → 100%</td></tr>
+                <tr><td>B</td><td>M2</td><td>A + C → 67%</td></tr>
+                <tr><td>C</td><td>M1</td><td>B + C → 67%</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
       <section id="results" class="section hermes-section">
-        <div class="section-heading">
-          <p class="eyebrow">Experimental Results</p>
-          <h2>實驗結果</h2>
+        <div class="section-heading wide-heading">
+          <p class="eyebrow">Results & Evidence</p>
+          <h2>成果解讀：分數、測試與實驗各自代表不同證據</h2>
+          <p>這個專題刻意區分三種證據：課程端 private evaluation 代表原始提交在未公開資料上的外部評測；本地 deterministic tests 代表 contract、fallback 與 regression 行為可重跑；public development experiments 則用來分析不同驗證策略的效果，但不能當作完全未見資料。</p>
         </div>
-        <div class="result-card-grid hermes-results">
+        <a class="hermes-figure hermes-exp-figure" href="#lightbox-hermes-exp" aria-label="放大 Hermes experimental results 圖">
+          <img src="images/HERMES/HERMES_EXP.png" alt="Hermes AI Agent experimental results">
+          <span>Experimental Overview</span>
+        </a>
+        <div class="result-card-grid hermes-results hermes-eval-grid">
           <article class="score-card">
             <p class="eyebrow">Course Evaluation</p>
             <p class="big-score">91.38</p>
             <h3>Overall Project Score</h3>
-            <p>外部課程評測：AIASE 2026 課程自動化評測結果，由成大課程端進行測評。</p>
-            <p>Basic Track – Text2SQL：30.0 / 30</p>
-            <p>Pairwise Track – Bug Hunter：8.33 / 10</p>
+            <p>原始 AIASE 2026 課程提交總分，由課程端自動化評測產生。</p>
+            <p>Basic Track, Text2SQL：30.0 / 30</p>
+            <p>Pairwise Track, Bug Hunter：8.33 / 10</p>
             <p>Open Track：93.2 / 100</p>
           </article>
           <article>
-            <h3>System Reliability</h3>
+            <h3>Local Deterministic Tests</h3>
             <ul class="compact-list">
-              <li>Root Pytest：193 passed</li>
+              <li>Root Pytest：192 passed, 1 skipped</li>
               <li>Code Author Self-test：45 / 45</li>
               <li>Bug Hunter Self-test：31 / 31</li>
               <li>Open Track Self-test：14 / 14</li>
               <li>Repository Verifier：27 / 27</li>
             </ul>
-            <p>透過 unit tests、self-tests、regression 與 repository verification，檢查輸出 contract、fallback、timeout 與 deterministic behavior。</p>
+            <p>這些測試主要驗證 output contract、fallback、worker isolation、regression 行為與 deterministic behavior。</p>
           </article>
           <article>
-            <h3>Verification Effect</h3>
+            <h3>Matched Validation Effect</h3>
             <div class="metric-pair"><span>Bug Hunter</span><strong>0.500 → 0.800</strong></div>
             <div class="metric-pair"><span>Overall Weighted</span><strong>0.806 → 0.889</strong></div>
-            <p>在相同 108 個 raw responses 上，Full Verification 明顯提高整體通過表現。</p>
+            <p>同一批 108 個 no-tool raw responses 中，Full Verification 的改善主要來自 Bug Hunter dynamic audit。Text2SQL 的 schema validation 可把 execution error 轉成 safe fallback，但不保證語意答對。</p>
           </article>
           <article>
-            <h3>Open Test Killer</h3>
+            <h3>Open Test Killer Benchmark</h3>
             <table class="mini-result-table">
               <thead><tr><th>Scenario</th><th>Exact</th><th>Greedy</th><th>Random</th></tr></thead>
               <tbody>
-                <tr><td>merge_intervals</td><td>1.0</td><td>1.0</td><td>0.746</td></tr>
-                <tr><td>top_k_frequent</td><td>1.0</td><td>1.0</td><td>0.792</td></tr>
-                <tr><td>valid_parentheses</td><td>0.8</td><td>0.8</td><td>0.436</td></tr>
+                <tr><td>merge_intervals</td><td>1.000</td><td>1.000</td><td>0.746</td></tr>
+                <tr><td>top_k_frequent</td><td>1.000</td><td>1.000</td><td>0.792</td></tr>
+                <tr><td>valid_parentheses</td><td>0.800</td><td>0.800</td><td>0.436</td></tr>
               </tbody>
             </table>
-            <p>Exact 與 Greedy selection 在相同 Test Budget 下皆優於 Random Baseline。</p>
+            <p>在 public development scenarios 中，exact / greedy 在相同測試數量下優於 random baseline；小型案例中 exact 和 greedy 選到相同集合。</p>
           </article>
+        </div>
+      </section>
+
+      <section id="limits" class="section hermes-section">
+        <div class="section-heading wide-heading">
+          <p class="eyebrow">Limits & Claims</p>
+          <h2>誠實限制：這是可靠性工程，不是保證 LLM 永遠正確</h2>
+          <p>這個專題展示的是「如何把 probabilistic LLM output 放進 deterministic engineering pipeline」。它可以降低 contract failure、execution failure 與部分可檢查錯誤，但不等於所有任務都有 100% accuracy，也不等於能安全執行任意惡意程式。</p>
+        </div>
+        <div class="hermes-limit-grid">
+          <article><h3>可以支持的 claim</h3><p>專題實作了四個可執行 Skill，並在 LLM candidate 外加入 SQL validation、AST checks、dynamic probes、mutation execution 與 deterministic fallback。</p></article>
+          <article><h3>不能過度宣稱</h3><p>不能宣稱泛化到 Spider、HumanEval、SWE-bench 或所有 production code；public dev tasks 曾用於開發，不是完全 held-out benchmark。</p></article>
+          <article><h3>安全限制</h3><p>child-process limits 可降低 infinite loop、memory blow-up 與 process leak 風險，但不是完整 VM / kernel-level sandbox。</p></article>
+          <article><h3>下一步</h3><p>最有價值的延伸是用獨立 private suite 重新評測，並保存模型版本、逐題輸出、token cost、runtime 與 precision / recall breakdown。</p></article>
         </div>
       </section>
 
@@ -209,20 +257,8 @@
         <div class="core-principle-card">
           <p class="eyebrow">Core Design Principle</p>
           <h2>LLM for Reasoning, Deterministic System for Trust</h2>
-          <p>讓 LLM 負責需要語意理解與生成的部分，把能明確檢查的工作交給 deterministic verification。</p>
+          <p>讓 LLM 做語意理解與候選生成，把格式、限制、執行結果與可重跑證據交給 deterministic verification。</p>
           <div class="principle-points"><span>生成不等於正確</span><span>能驗證的就不要只靠模型判斷</span><span>最終輸出必須具有明確 contract</span></div>
-        </div>
-      </section>
-
-      <section class="section hermes-section">
-        <div class="section-heading">
-          <p class="eyebrow">What I Learned</p>
-          <h2>實作收穫</h2>
-        </div>
-        <div class="learned-grid">
-          <article><h3>Agent Workflow Design</h3><p>將 Skill Prompt、LLM、Wrapper、Evaluator 串成完整 Agent Pipeline。</p></article>
-          <article><h3>Verification-first Engineering</h3><p>透過 deterministic check、tests 與 fallback 降低 LLM 不穩定輸出的風險。</p></article>
-          <article><h3>Evaluation & Testing</h3><p>使用 regression testing、mutation testing 與 benchmark 分析 Agent Skill 的正確性。</p></article>
         </div>
       </section>
 
@@ -230,7 +266,7 @@
         <div class="github-card">
           <p class="eyebrow">GitHub</p>
           <h2>Hermes AI Agent｜Verifiable Agent Skills</h2>
-          <p>完整程式碼、Skill wrapper、測試與 benchmark 實驗皆整理於 GitHub repository。</p>
+          <p>完整程式碼、Skill wrapper、測試、benchmark 與技術文件皆整理於 GitHub repository。</p>
           <div class="hero-actions">
             <a class="button primary" href="https://github.com/loweiwei/aiase-llm-agent-verification" target="_blank" rel="noreferrer">GitHub</a>
             <a class="button secondary" href="https://github.com/loweiwei/aiase-llm-agent-verification" target="_blank" rel="noreferrer">View Source</a>
@@ -240,11 +276,11 @@
     </main>
 
     <div id="lightbox-hermes-pipeline" class="lightbox" aria-label="Hermes Overall Pipeline 放大">
-      <a class="lightbox-close" href="#pipeline">×</a>
+      <a class="lightbox-close" href="#architecture">×</a>
       <img src="images/HERMES/HERMES.png" alt="Hermes overall pipeline enlarged">
     </div>
     <div id="lightbox-hermes-exp" class="lightbox" aria-label="Hermes experimental overview 放大">
-      <a class="lightbox-close" href="#pipeline">×</a>
+      <a class="lightbox-close" href="#results">×</a>
       <img src="images/HERMES/HERMES_EXP.png" alt="Hermes experimental overview enlarged">
     </div>
 
