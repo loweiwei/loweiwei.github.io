@@ -4325,6 +4325,152 @@ a.project-card:hover {
   border-top: 1px solid var(--line);
 }
 
+.ser-section code {
+  padding: 2px 6px;
+  border-radius: 8px;
+  background: rgba(196, 123, 65, 0.13);
+  color: #8a4a20;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.9em;
+  font-weight: 800;
+}
+
+.ser-outline-section {
+  padding-top: 46px;
+}
+
+.ser-outline-section h2 {
+  max-width: 900px;
+  font-size: clamp(1.9rem, 4vw, 3.2rem);
+}
+
+.ser-roadmap {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 18px;
+  max-width: 980px;
+  padding: 20px 24px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: rgba(255, 250, 240, 0.78);
+  box-shadow: 0 16px 44px rgba(69, 45, 25, 0.08);
+}
+
+.ser-roadmap a {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(69, 45, 25, 0.12);
+}
+
+.ser-roadmap a:hover {
+  transform: translateX(4px);
+}
+
+.ser-roadmap a:last-child {
+  border-bottom: 0;
+}
+
+.ser-roadmap span {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(196, 123, 65, 0.24);
+  border-radius: 999px;
+  background: rgba(196, 123, 65, 0.13);
+  color: #8a4a20;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.ser-roadmap div {
+  display: grid;
+  gap: 4px;
+}
+
+.ser-roadmap strong {
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.ser-roadmap small {
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.ser-story-grid,
+.ser-data-grid,
+.ser-model-grid,
+.ser-demo-grid,
+.ser-limit-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.ser-story-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ser-data-grid,
+.ser-model-grid,
+.ser-demo-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.ser-limit-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 18px;
+}
+
+.ser-story-grid article,
+.ser-data-grid article,
+.ser-model-grid article,
+.ser-demo-grid article,
+.ser-limit-grid article {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--surface-soft);
+  box-shadow: 0 16px 48px rgba(69, 45, 25, 0.1);
+}
+
+.ser-story-grid article {
+  background: linear-gradient(135deg, rgba(255, 250, 240, 0.9), rgba(255, 244, 235, 0.78));
+}
+
+.ser-data-grid article > span,
+.ser-model-grid article > span,
+.ser-demo-grid article > span {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 12px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: var(--surface-strong);
+  color: #fffaf0;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.ser-story-grid p,
+.ser-data-grid p,
+.ser-model-grid p,
+.ser-demo-grid p,
+.ser-limit-grid p {
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.68;
+}
+
+.ser-detailed-pipeline {
+  margin: 18px 0;
+}
+
 .ser-figure {
   display: block;
   overflow: hidden;
@@ -4699,6 +4845,10 @@ a.project-card:hover {
   border-radius: 30px;
   background: rgba(255, 250, 240, 0.72);
   box-shadow: 0 18px 52px rgba(69, 45, 25, 0.1);
+}
+
+.ser-main-pipeline.ser-detailed-pipeline {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
 .ser-main-pipeline span,
@@ -5328,6 +5478,12 @@ a.project-card:hover {
   .skill-flow,
   .result-card-grid.hermes-results,
   .principle-points,
+  .ser-roadmap,
+  .ser-story-grid,
+  .ser-data-grid,
+  .ser-model-grid,
+  .ser-demo-grid,
+  .ser-limit-grid,
   .ser-main-pipeline,
   .baseline-result-grid,
   .leakage-compare-grid,
@@ -5380,6 +5536,14 @@ a.project-card:hover {
   }
 
   .hermes-roadmap a:last-child {
+    border-bottom: 0;
+  }
+
+  .ser-roadmap a:nth-last-child(-n + 2) {
+    border-bottom: 1px solid rgba(69, 45, 25, 0.12);
+  }
+
+  .ser-roadmap a:last-child {
     border-bottom: 0;
   }
 
@@ -5594,6 +5758,10 @@ a.project-card:hover {
     grid-template-columns: 1fr;
   }
 
+  .ser-roadmap {
+    grid-template-columns: 1fr;
+  }
+
   .defi-roadmap a:nth-last-child(-n + 2) {
     border-bottom: 1px solid rgba(69, 45, 25, 0.12);
   }
@@ -5610,11 +5778,23 @@ a.project-card:hover {
     border-bottom: 0;
   }
 
+  .ser-roadmap a:nth-last-child(-n + 2) {
+    border-bottom: 1px solid rgba(69, 45, 25, 0.12);
+  }
+
+  .ser-roadmap a:last-child {
+    border-bottom: 0;
+  }
+
   .defi-roadmap a {
     min-height: auto;
   }
 
   .hermes-roadmap a {
+    min-height: auto;
+  }
+
+  .ser-roadmap a {
     min-height: auto;
   }
 
