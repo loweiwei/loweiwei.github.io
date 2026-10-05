@@ -2711,61 +2711,66 @@ a.project-card:hover {
   padding-top: 46px;
 }
 
-.defi-toc-card {
-  max-width: 980px;
-  padding: 22px 26px;
+.defi-outline-section h2 {
+  max-width: 900px;
+  font-size: clamp(1.9rem, 4vw, 3.2rem);
+}
+
+.defi-roadmap {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  max-width: 1120px;
+}
+
+.defi-roadmap a {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-height: 150px;
+  padding: 20px;
+  overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 26px;
-  background: rgba(255, 250, 240, 0.82);
-  box-shadow: 0 16px 44px rgba(69, 45, 25, 0.08);
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(255, 250, 240, 0.92), rgba(255, 244, 242, 0.76));
+  box-shadow: 0 16px 42px rgba(69, 45, 25, 0.08);
 }
 
-.defi-toc-card ol {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 28px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  counter-reset: toc;
+.defi-roadmap a::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent-deep), #7658b5);
+  content: "";
 }
 
-.defi-toc-card li {
-  border-bottom: 1px solid var(--line);
+.defi-roadmap a:hover {
+  transform: translateY(-3px);
 }
 
-.defi-toc-card li:nth-last-child(-n + 2) {
-  border-bottom: 0;
-}
-
-.defi-toc-card a {
-  display: grid;
-  grid-template-columns: 42px minmax(190px, 0.48fr) minmax(0, 1fr);
-  gap: 12px;
-  align-items: baseline;
-  padding: 14px 0;
-}
-
-.defi-toc-card a:hover {
-  transform: translateX(4px);
-}
-
-.defi-toc-card span {
-  color: var(--accent-deep);
+.defi-roadmap span {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 14px;
+  background: var(--surface-strong);
+  color: #fffaf0;
   font-size: 0.82rem;
   font-weight: 900;
-  letter-spacing: 0.08em;
 }
 
-.defi-toc-card strong {
+.defi-roadmap strong {
   color: var(--text);
-  font-size: 0.98rem;
+  font-size: 1rem;
+  line-height: 1.25;
 }
 
-.defi-toc-card small {
+.defi-roadmap small {
   color: var(--muted);
-  font-size: 0.86rem;
-  line-height: 1.45;
+  font-size: 0.88rem;
+  line-height: 1.5;
 }
 
 .defi-hero-visual {
@@ -4971,24 +4976,8 @@ a.project-card:hover {
     overflow-x: auto;
   }
 
-  .defi-toc-card ol {
-    grid-template-columns: 1fr;
-  }
-
-  .defi-toc-card li:nth-last-child(-n + 2) {
-    border-bottom: 1px solid var(--line);
-  }
-
-  .defi-toc-card li:last-child {
-    border-bottom: 0;
-  }
-
-  .defi-toc-card a {
-    grid-template-columns: 38px minmax(0, 1fr);
-  }
-
-  .defi-toc-card small {
-    grid-column: 2;
+  .defi-roadmap {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .early-stop-figure {
@@ -5186,6 +5175,14 @@ a.project-card:hover {
 
   .nav-links {
     font-size: 0.88rem;
+  }
+
+  .defi-roadmap {
+    grid-template-columns: 1fr;
+  }
+
+  .defi-roadmap a {
+    min-height: auto;
   }
 
   h1 {
